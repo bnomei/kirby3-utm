@@ -1,0 +1,58 @@
+{
+    "name": "bnomei/kirby3-utm",
+    "type": "kirby-plugin",
+    "version": "1.0.0",
+    "license": "MIT",
+    "description": "Kirby 3 UTM Tracking",
+    "authors": [
+        {
+            "name": "Bruno Meilick",
+            "email": "b@bnomei.com"
+        }
+    ],
+    "keywords": [
+        "kirby3",
+        "kirby3-cms",
+        "kirby3-plugin",
+        "utm",
+        "campaign",
+        "tracking"
+    ],
+    "config": {
+        "optimize-autoloader": true,
+        "sort-packages": true,
+        "allow-plugins": {
+            "getkirby/composer-installer": true
+        }
+    },
+    "require": {
+        "php": ">=8.0",
+        "getkirby/composer-installer": "^1.2"
+    },
+    "require-dev": {
+        "getkirby/cms": "^3.8.1.1",
+        "php-coveralls/php-coveralls": "^2.4",
+        "phpunit/phpunit": "^9.5"
+    },
+    "scripts": {
+        "fix": "php-cs-fixer fix",
+        "test": [
+            "mkdir -p tests/logs",
+            "@putenv XDEBUG_MODE=coverage",
+            "phpunit --configuration ./phpunit.xml"
+        ],
+        "dist": [
+            "composer install --no-dev --optimize-autoloader",
+            "git rm -rf --cached .; git add .;"
+        ],
+        "kirby": [
+            "composer install",
+            "composer update",
+            "composer install --working-dir=tests/kirby --no-dev --optimize-autoloader",
+            "composer update --working-dir=tests/kirby"
+        ]
+    },
+    "extra": {
+        "kirby-cms-path": "tests/kirby"
+    }
+}
