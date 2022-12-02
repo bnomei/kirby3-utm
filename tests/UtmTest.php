@@ -28,7 +28,7 @@ final class UtmTest extends TestCase
 
         $utm = \Bnomei\Utm::singleton([
             'ip' => '169.150.197.101',
-            'ipstack' => F::read(__DIR__ . '/.ipstackkey'),
+            'ipstack_access_key' => F::read(__DIR__ . '/.ipstackkey'),
         ]);
 
         $count = $utm->count();

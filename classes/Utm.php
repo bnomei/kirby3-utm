@@ -130,31 +130,35 @@ final class Utm
     public function ipstack(string $ip, string $iphash = null): array
     {
         $key = $this->option('ipstack_access_key');
+
         // ip could be empty on unittests
         if (empty($ip) || empty($key)) {
             return [];
         }
-        $cache = kirby()->cache('bnomei.utm');
 
+        $cache = kirby()->cache('bnomei.utm');
         $iphash ??= sha1(__DIR__ . $ip);
         if ($data = $cache->get($iphash)) {
             return $data;
         }
 
         $https = $this->option('ipstack_https');
-
-        $response = Remote::get($https . "://api.ipstack.com/" . $ip . "?access_key=" . $key);
-        $ipdata = $response->code() === 200 ?
-            @json_decode($response->content(), true) :
-            null;
-
-        if (is_array($ipdata)) {
-            unset($ipdata['ip']); // remove the plain ip
-            unset($ipdata['hostname']); // remove the plain host
-            $cache->set($iphash, $ipdata, intval($this->option('expire')));
-        } else {
-            $ipdata = [];
+        $url = $https . "://api.ipstack.com/" . $ip . "/?access_key=" . $key;
+        try {
+            $response = Remote::get($url);
+            $ipdata = $response->code() === 200 ?
+                @json_decode($response->content(), true) :
+                null;
+        } catch (\Exception $e) {
+            $ipdata = [
+                'ip' => $ip,
+                'hostname' => $ip,
+            ];
         }
+
+        unset($ipdata['ip']); // remove the plain ip
+        unset($ipdata['hostname']); // remove the plain host
+        $cache->set($iphash, $ipdata, intval($this->option('expire')));
 
         return $ipdata;
     }
