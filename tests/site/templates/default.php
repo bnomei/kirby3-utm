@@ -1,0 +1,1 @@
+<?= \Bnomei\Utm::singleton()->count();

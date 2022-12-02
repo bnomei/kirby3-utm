@@ -14,10 +14,17 @@
         "kirby3",
         "kirby3-cms",
         "kirby3-plugin",
+        "seo",
         "utm",
         "campaign",
-        "tracking"
+        "tracking",
+        "sqlite"
     ],
+    "autoload": {
+        "psr-4": {
+            "Bnomei\\": "classes/"
+        }
+    },
     "config": {
         "optimize-autoloader": true,
         "sort-packages": true,
@@ -27,7 +34,8 @@
     },
     "require": {
         "php": ">=8.0",
-        "getkirby/composer-installer": "^1.2"
+        "getkirby/composer-installer": "^1.2",
+        "ext-sqlite3": "*"
     },
     "require-dev": {
         "getkirby/cms": "^3.8.1.1",

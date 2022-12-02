@@ -11,6 +11,10 @@ class ComposerStaticInit029ecc180b2afe663da39dc0c921f235
         array (
             'Kirby\\' => 6,
         ),
+        'B' => 
+        array (
+            'Bnomei\\' => 7,
+        ),
     );
 
     public static $prefixDirsPsr4 = array (
@@ -18,9 +22,14 @@ class ComposerStaticInit029ecc180b2afe663da39dc0c921f235
         array (
             0 => __DIR__ . '/..' . '/getkirby/composer-installer/src',
         ),
+        'Bnomei\\' => 
+        array (
+            0 => __DIR__ . '/../..' . '/classes',
+        ),
     );
 
     public static $classMap = array (
+        'Bnomei\\Utm' => __DIR__ . '/../..' . '/classes/Utm.php',
         'Composer\\InstalledVersions' => __DIR__ . '/..' . '/composer/InstalledVersions.php',
         'Kirby\\ComposerInstaller\\CmsInstaller' => __DIR__ . '/..' . '/getkirby/composer-installer/src/ComposerInstaller/CmsInstaller.php',
         'Kirby\\ComposerInstaller\\Installer' => __DIR__ . '/..' . '/getkirby/composer-installer/src/ComposerInstaller/Installer.php',
