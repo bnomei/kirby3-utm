@@ -98,7 +98,7 @@ final class Utm
         $ipdata = $this->ipstack($ip, $iphash);
         $generated = [
             'visited_at' => date('Y-m-d H:i:s', time()),
-            'ip' => $ip,
+            'iphash' => $iphash,
             'country' => A::get($ipdata, 'country_name', ''),
             'city' => A::get($ipdata, 'city', ''),
             'useragent' => $this->useragent(),
@@ -107,6 +107,7 @@ final class Utm
         // allow generated to be overwritten by input params (for testing etc)
         $params = array_merge($generated, $params);
 
+        // retrieve again after merging
         $utm_source = A::get($params, 'utm_source', '');
         $utm_medium = A::get($params, 'utm_medium', '');
         $utm_campaign = A::get($params, 'utm_campaign', '');
