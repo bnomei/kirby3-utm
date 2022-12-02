@@ -43,4 +43,6 @@ final class UtmTest extends TestCase
 
         $this->assertEquals($count + 1, $utm->count());
     }
+
+    // TODO: seed lots of events with faker
 }

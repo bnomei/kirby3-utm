@@ -90,25 +90,37 @@ final class Utm
         $params = $this->sanitize($params);
 
         if (count($params) === 0) {
-            return false;
+            return false; // no UTM params at all
         }
+
+        $ip = $this->option('ip') ?? kirby()->visitor()->ip();
+        $iphash = sha1(__DIR__ . $ip);
+        $ipdata = $this->ipstack($ip, $iphash);
+        $generated = [
+            'visited_at' => date('Y-m-d H:i:s', time()),
+            'ip' => $ip,
+            'country' => A::get($ipdata, 'country_name', ''),
+            'city' => A::get($ipdata, 'city', ''),
+            'useragent' => $this->useragent(),
+        ];
+
+        // allow generated to be overwritten by input params (for testing etc)
+        $params = array_merge($generated, $params);
 
         $utm_source = A::get($params, 'utm_source', '');
         $utm_medium = A::get($params, 'utm_medium', '');
         $utm_campaign = A::get($params, 'utm_campaign', '');
         $utm_term = A::get($params, 'utm_term', '');
         $utm_content = A::get($params, 'utm_content', '');
-        $visited_at = date('Y-m-d H:i:s', time());
-        $ip = $this->option('ip') ?? kirby()->visitor()->ip();
-        $iphash = sha1(__DIR__ . $ip);
-        $ipdata = $this->ipstack($ip, $iphash);
-        $country = A::get($ipdata, 'country_name', '');
-        $city = A::get($ipdata, 'city', '');
-        $useragent = $this->useragent();
+        $visited_at = A::get($params, 'visited_at', '');
+        $iphash = A::get($params, 'iphash', '');
+        $country = A::get($params, 'country', '');
+        $city = A::get($params, 'city', '');
+        $useragent = A::get($params, 'useragent', '');
 
         $this->database()->query("INSERT INTO utm (page_id, utm_source, utm_medium, utm_campaign, utm_term, utm_content, visited_at, iphash, country_name, city, user_agent) VALUES ('${id}', '${utm_source}', '${utm_medium}', '${utm_campaign}', '${utm_term}', '${utm_content}', '${visited_at}', '${iphash}', '${country}', '${city}', '${useragent}')");
 
-        $this->count = []; // reset counts
+        $this->count = []; // reset static counts cache
 
         return true;
     }
