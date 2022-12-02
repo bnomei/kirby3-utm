@@ -1,0 +1,55 @@
+title: UTM Campaign
+
+options:
+  changeSlug: false
+  changeStatus: false
+  changeTemplate: false
+  changeTitle: false
+  delete: false
+  duplicate: false
+  update: false
+
+tabs:
+  stats:
+    columns:
+      stats:
+        width: 1/1
+        sections:
+          stats:
+            type: stats
+            reports: page.reports('stats')
+          source:
+            type: stats
+            reports: page.reports('source')
+          medium:
+            type: stats
+            reports: page.reports('medium')
+          countries:
+            type: stats
+            reports: page.reports('countries')
+          cities:
+            type: stats
+            reports: page.reports('cities')
+  events:
+    sections:
+      events:
+        type: pages
+        create: false
+        image: false
+        sortable: false
+        layout: table
+        sortBy: visited_at desc
+        columns:
+          page_id: true
+          utm_source: true
+          # utm_campaign: true
+          utm_medium: true
+          utm_term: true
+          utm_content: true
+          visited_at: true
+          # iphash: true
+          # country_name: true
+          # city: true
+          # user_agent: true
+        templates:
+            - utm-event

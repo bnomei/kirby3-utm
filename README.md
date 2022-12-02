@@ -39,6 +39,39 @@ Using download & copy: download [the latest release of this plugin](https://gith
 
 ## Usage
 
+> WIP
+
+## UTM
+
+Original UTM explanation from (Bonnie Kittle at cdgi.com)[https://www.cdgi.com/2020/04/how-to-use-utm-codes-to-track-campaigns-in-google-analytics/].
+
+### utm_source
+
+Identify the advertiser, site, publication, etc. that is sending traffic to your property, for example, MassLawyers Weekly, BBJ, NEREJ
+
+### utm_medium
+
+The advertising or marketing medium, for example, CPC (cost-per-click), banner ad, email newsletter, LinkedIn
+
+### utm_campaign
+
+The individual campaign name, slogan, promo code, etc.
+
+### utm_term
+
+Identify paid search keywords. If you’re manually tagging paid keyword campaigns, you should also use utm_term to specify the keyword.
+
+### utm_content
+
+Used to differentiate similar content or links within the same ad. For example, if you have two call-to-action links within the same email message, you can use utm_content and set different values for each so you can tell which version is more effective. (i.e. image, button, headline)
+
+## Settings
+
+> WIP
+
+## Dependencies
+
+- (optional) (free ipstack account for IP geolocations)[https://ipstack.com/]
 
 ## Disclaimer
 

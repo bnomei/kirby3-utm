@@ -1,2 +1,10 @@
 blueprint: site
 
+options:
+  changeSlug: false
+  changeStatus: false
+  changeTemplate: false
+
+sections:
+  pages:
+    type: pages

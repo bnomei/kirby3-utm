@@ -1,0 +1,50 @@
+title: UTM Event
+
+options:
+  changeSlug: false
+  changeStatus: false
+  changeTemplate: false
+  changeTitle: false
+  delete: false
+  duplicate: false
+  update: false
+
+fields:
+  page:
+    type: headline
+  page_id:
+    type: text
+  utm:
+    type: headline
+  utm_source:
+    type: text
+    width: 1/3
+  utm_medium:
+    type: text
+    width: 1/3
+  utm_campaign:
+    type: text
+    width: 1/3
+  utm_term:
+    type: text
+    width: 1/3
+  utm_content:
+    type: text
+    width: 1/3
+  visitor:
+    type: headline
+  visited_at:
+    type: text
+    width: 1/3
+  iphash:
+    type: text
+    width: 1/3
+  user_agent:
+    type: text
+    width: 1/3
+  country_name:
+    type: text
+    width: 1/3
+  city:
+    type: text
+    width: 1/3

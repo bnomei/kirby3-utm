@@ -18,6 +18,9 @@ final class Utm
     /** @var array $options */
     private $options;
 
+    /** @var array $count */
+    private $count;
+
     public function __construct(array $options = [])
     {
         $defaults = [
@@ -27,6 +30,7 @@ final class Utm
             'ip' => null,
             'ipstack_access_key' => option('bnomei.utm.ipstack.access_key'),
             'ipstack_https' => option('bnomei.utm.ipstack.https') ? 'https' : 'http',
+            'stats_range' => option('bnomei.utm.stats.range'),
         ];
         $this->options = array_merge($defaults, $options);
 
@@ -47,7 +51,7 @@ final class Utm
         $target = $this->options['file'];
         if (!F::exists($target)) {
             $db = new \SQLite3($target);
-            $db->exec("CREATE TABLE IF NOT EXISTS utm (ID INTEGER PRIMARY KEY AUTOINCREMENT, page_id TEXT NOT NULL, utm_source TEXT, utm_medium TEXT, utm_campaign TEXT, utm_term TEXT, utm_content TEXT, visited_at INTEGER NOT NULL, iphash TEXT, country_name TEXT, city TEXT, user_agent TEXT)");
+            $db->exec("CREATE TABLE IF NOT EXISTS utm (ID INTEGER PRIMARY KEY AUTOINCREMENT, page_id TEXT NOT NULL, utm_source TEXT, utm_medium TEXT, utm_campaign TEXT, utm_term TEXT, utm_content TEXT, visited_at DATETIME DEFAULT CURRENT_TIMESTAMP, iphash TEXT, country_name TEXT, city TEXT, user_agent TEXT)");
             $db->close();
         }
 
@@ -55,6 +59,8 @@ final class Utm
             'type' => 'sqlite',
             'database' => $target,
         ]);
+
+        $this->count = [];
     }
 
     /**
@@ -92,7 +98,7 @@ final class Utm
         $utm_campaign = A::get($params, 'utm_campaign', '');
         $utm_term = A::get($params, 'utm_term', '');
         $utm_content = A::get($params, 'utm_content', '');
-        $visited_at = time();
+        $visited_at = date('Y-m-d H:i:s', time());
         $ip = $this->option('ip') ?? kirby()->visitor()->ip();
         $iphash = sha1(__DIR__ . $ip);
         $ipdata = $this->ipstack($ip, $iphash);
@@ -100,15 +106,18 @@ final class Utm
         $city = A::get($ipdata, 'city', '');
         $useragent = $this->useragent();
 
-        $this->database()->query("INSERT INTO utm (page_id, utm_source, utm_medium, utm_campaign, utm_term, utm_content, visited_at, iphash, country_name, city, user_agent) VALUES ('${id}', '${utm_source}', '${utm_medium}', '${utm_campaign}', '${utm_term}', '${utm_content}', ${visited_at}, '${iphash}', '${country}', '${city}', '${useragent}')");
+        $this->database()->query("INSERT INTO utm (page_id, utm_source, utm_medium, utm_campaign, utm_term, utm_content, visited_at, iphash, country_name, city, user_agent) VALUES ('${id}', '${utm_source}', '${utm_medium}', '${utm_campaign}', '${utm_term}', '${utm_content}', '${visited_at}', '${iphash}', '${country}', '${city}', '${useragent}')");
+
+        $this->count = []; // reset counts
 
         return true;
     }
 
     public function count(string $query = 'SELECT count(*) AS count FROM utm'): int
     {
-        $this->count = intval($this->database->query($query)->first()->count);
-        return $this->count;
+        $key = md5($query);
+        $this->count[$key] = intval($this->database->query($query)->first()->count);
+        return $this->count[$key];
     }
 
     public function useragent(): string

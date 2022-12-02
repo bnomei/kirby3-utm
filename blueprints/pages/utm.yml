@@ -1,0 +1,36 @@
+title: UTM
+
+options:
+  changeSlug: false
+  changeStatus: false
+  changeTemplate: false
+  changeTitle: false
+  delete: false
+  duplicate: false
+  update: false
+
+columns:
+  stats:
+    width: 1/1
+    sections:
+      stats:
+        type: stats
+        reports: page.reports('stats')
+  pages:
+    width: 1/1
+    sections:
+      campaigns:
+        type: pages
+        create: false
+        image: false
+        search: true # only titles
+        sortable: false
+        layout: table
+        sortBy: visited_at desc
+        columns:
+          events_count: true
+          unique_visitors: true
+          visited_at: true
+        # TODO: columns
+        templates:
+          - utm-campaign
