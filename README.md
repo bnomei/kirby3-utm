@@ -49,7 +49,7 @@ Events will automatically be tracked to a sqlite database and appear in the UTM 
 
 ## UTM
 
-Original UTM explanation from [Bonnie Kittle at cdgi.com]([https://www.cdgi.com/2020/04/how-to-use-utm-codes-to-track-campaigns-in-google-analytics/).
+Original UTM explanation from [Bonnie Kittle at cdgi.com](https://www.cdgi.com/2020/04/how-to-use-utm-codes-to-track-campaigns-in-google-analytics/).
 
 ### utm_source
 
@@ -73,7 +73,17 @@ Used to differentiate similar content or links within the same ad. For example, 
 
 ## Settings
 
-> WIP
+| bnomei.utm.        | Default | Description                                              |
+|--------------------|---------|----------------------------------------------------------|
+| enabled            | `true`  |                                                          |
+| ipstack.access_key | `null`  | string. access key                                       |
+| ipstack.https      | `false` | boolean. if `true` will use premium https endpoint.      |
+| ipstack.expire     | `60*24` | int. cache in minutes for ipstack IP resolution.         |
+| sqlite.file        | `fn()`  | path to sqlite file. like site/logs                      |
+| stats.range        | `30`    | int. half of range of days for bar and change percentage |
+| ratelimit.duration | `60*60` | int. in seconds before trials reset                      |
+| ratelimit.trials   | `120`   | int. number of allowed trials in given duration          |
+
 
 ## Dependencies
 

@@ -30,6 +30,7 @@ final class Utm
             'ip' => null,
             'ipstack_access_key' => option('bnomei.utm.ipstack.access_key'),
             'ipstack_https' => option('bnomei.utm.ipstack.https') ? 'https' : 'http',
+            'ipstack_expire' => option('bnomei.utm.ipstack.expire'),
             'stats_range' => option('bnomei.utm.stats.range'),
             'ratelimit_duration' => option('bnomei.utm.ratelimit.duration'),
             'ratelimit_trials' => option('bnomei.utm.ratelimit.trials'),
@@ -188,7 +189,7 @@ final class Utm
 
         unset($ipdata['ip']); // remove the plain ip
         unset($ipdata['hostname']); // remove the plain host
-        $cache->set($iphash, $ipdata, intval($this->option('expire')));
+        $cache->set($iphash, $ipdata, intval($this->option('ipstack_expire')));
 
         return $ipdata;
     }

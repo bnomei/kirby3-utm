@@ -14,8 +14,8 @@ Kirby::plugin('bnomei/utm', [
         'ipstack' => [
             'access_key' => fn () => null, // free key from https://ipstack.com/
             'https' => false, // only premium accounts can do that
+            'expire' => 60*24, // in minutes
         ],
-        'expire' => 60*24, // in minutes
         'sqlite' => [
             'file' => function () {
                 if (!Dir::exists(kirby()->roots()->logs())) {
