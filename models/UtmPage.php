@@ -6,6 +6,7 @@ use Bnomei\Utm;
 use Kirby\Cms\Page;
 use Kirby\Cms\Pages;
 use Kirby\Toolkit\A;
+use Kirby\Toolkit\Str;
 use Kirby\Uuid\Uuid;
 
 class UtmPage extends Page
@@ -62,7 +63,10 @@ class UtmPage extends Page
         $children = [];
         $db = Utm::singleton()->database();
 
-        foreach ($db->query('SELECT distinct(utm_campaign) as title FROM utm') as $campaign) {
+        $results = $db->query('SELECT distinct(utm_campaign) as title FROM utm');
+        if (!$results) return [];
+
+        foreach ($results as $campaign) {
             $title = empty($campaign->title) ? 'undefined' : $campaign->title;
             $children[] = [
                 'slug' => Str::slug($title),

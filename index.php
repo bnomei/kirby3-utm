@@ -27,6 +27,10 @@ Kirby::plugin('bnomei/utm', [
         'stats' => [
             'range' => 14, // in days
         ],
+        'ratelimit' => [
+            'duration' => 60*60, // 1h in seconds
+            'trials' => 120, // within given duration
+        ],
         'cache' => true,
     ],
     'blueprints' => [

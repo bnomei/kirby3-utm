@@ -39,19 +39,25 @@ Using download & copy: download [the latest release of this plugin](https://gith
 
 ## Usage
 
-> WIP
+### UTM Page
+
+Create a new page at root level with the blueprint `utm`.
+
+### Tracking
+
+Events will automatically be tracked to a sqlite database and appear in the UTM page within the panel grouped by campaign and displaying multiple stats.
 
 ## UTM
 
-Original UTM explanation from (Bonnie Kittle at cdgi.com)[https://www.cdgi.com/2020/04/how-to-use-utm-codes-to-track-campaigns-in-google-analytics/].
+Original UTM explanation from [Bonnie Kittle at cdgi.com]([https://www.cdgi.com/2020/04/how-to-use-utm-codes-to-track-campaigns-in-google-analytics/).
 
 ### utm_source
 
-Identify the advertiser, site, publication, etc. that is sending traffic to your property, for example, MassLawyers Weekly, BBJ, NEREJ
+The advertiser, site, publication, etc. that is sending traffic to your property
 
 ### utm_medium
 
-The advertising or marketing medium, for example, CPC (cost-per-click), banner ad, email newsletter, LinkedIn
+The advertising or marketing medium, for example, CPC (cost-per-click), banner ad, email newsletter
 
 ### utm_campaign
 
@@ -71,7 +77,7 @@ Used to differentiate similar content or links within the same ad. For example, 
 
 ## Dependencies
 
-- (optional) (free ipstack account for IP geolocations)[https://ipstack.com/]
+- (optional) [free ipstack account for IP geolocations](https://ipstack.com/)
 
 ## Disclaimer
 

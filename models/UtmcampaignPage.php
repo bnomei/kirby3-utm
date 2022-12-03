@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 use Bnomei\Utm;
 use Kirby\Cms\Page;
+use Kirby\Cms\Pages;
 use Kirby\Toolkit\A;
+use Kirby\Toolkit\Str;
 
 class UtmcampaignPage extends Page
 {
@@ -82,7 +84,9 @@ class UtmcampaignPage extends Page
         $children = [];
         $db = Utm::singleton()->database();
 
-        foreach ($db->query("SELECT id as title FROM utm WHERE utm_campaign='". $this->title()->value() . "'") as $event) {
+        $results = $db->query("SELECT id as title FROM utm WHERE utm_campaign='" . $this->title()->value() . "'");
+        if (!$results) return [];
+        foreach ($results as $event) {
             $title = $event->title;
             $children[] = [
                 'slug' => Str::slug($title),

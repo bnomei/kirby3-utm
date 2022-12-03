@@ -44,5 +44,125 @@ final class UtmTest extends TestCase
         $this->assertEquals($count + 1, $utm->count());
     }
 
-    // TODO: seed lots of events with faker
+    public function testRateLimit()
+    {
+        $utm = \Bnomei\Utm::singleton([
+            'ratelimit_trials' => 5,
+        ]);
+
+        for($n=0;$n<5;$n++) {
+            $this->assertTrue($utm->track('home', [
+                'utm_source' => 'UTM_SOURCE',
+                'utm_medium' => 'UTM_MEDIUM',
+                'utm_campaign' => 'UTM_CAMPAIGN',
+                'utm_term' => 'UTM_TERM',
+                'utm_content' => 'UTM_CONTENT',
+            ]));
+        }
+
+        $this->assertFalse($utm->track('home', [
+            'utm_source' => 'UTM_SOURCE',
+            'utm_medium' => 'UTM_MEDIUM',
+            'utm_campaign' => 'UTM_CAMPAIGN',
+            'utm_term' => 'UTM_TERM',
+            'utm_content' => 'UTM_CONTENT',
+        ]));
+    }
+
+    public function testManyEvents()
+    {
+        $faker = Faker\Factory::create('en');
+        $utm = \Bnomei\Utm::singleton();
+
+        $count = $utm->count();
+
+        $days90to60 = new DatePeriod(new DateTime('now - 90 days'), new DateInterval('P1D'), new DateTime('now - 60 days'));
+        foreach($days90to60 as $day) {
+            $c = 1;
+            $n = $faker->numberBetween(100, 200);
+            while($c <= $n) {
+                $this->createEvent($utm, $faker, $day);
+                $c++;
+            }
+        }
+
+        $days60to30 = new DatePeriod(new DateTime('now - 60 days'), new DateInterval('P1D'), new DateTime('now - 30 days'));
+        foreach($days60to30 as $day) {
+            $c = 1;
+            $n = $faker->numberBetween(1, 100);
+            while($c <= $n) {
+                $this->createEvent($utm, $faker, $day);
+                $c++;
+            }
+        }
+
+        $days30to0 = new DatePeriod(new DateTime('now - 30 days'), new DateInterval('P1D'), new DateTime('now'));
+        foreach($days30to0 as $day) {
+            $c = 1;
+            $n = $faker->numberBetween(200, 400);
+            while($c <= $n) {
+                $this->createEvent($utm, $faker, $day);
+                $c++;
+            }
+        }
+
+        $this->assertTrue($count < $utm->count());
+    }
+
+    private function createEvent($utm, $faker, $day) {
+        $utm->track('home', [
+            'visited_at' => $day->format('Y-m-d') . ' ' . $faker->time('H:i:s', '23:59:59'),
+            'iphash' => sha1(__DIR__ . $faker->numberBetween(0, 200)),
+            'country' => $faker->randomElement([
+                'England',
+                'France',
+                'Germany',
+                'Ireland',
+                'Switzerland',
+                'USA',
+            ]),
+            'city' => $faker->randomElement([
+                'London',
+                'Paris',
+                'Berlin',
+                'Dublin',
+                'Zurich',
+                'New York',
+            ]),
+            'useragent' => $faker->randomElement([
+                'mobile',
+                'tablet',
+                'desktop',
+            ]),
+            'utm_source' => $faker->randomElement([
+                'Destructiod',
+                'Games Radar',
+                'Metacritic',
+                'GameSpot'
+            ]),
+            'utm_medium' => $faker->randomElement([
+                'cpc',
+                'email',
+                'newsletter',
+                'mastodon',
+                'tiktok',
+                'twitter',
+                'website',
+            ]),
+            'utm_campaign' => $faker->randomElement([
+                'Tunic', 'Tunic', 'Tunic',
+                'Sifu', 'Sifu', 'Sifu',
+                'Neon White', 'Neon White', 'Neon White',
+                'Call Of Duty: Modern Warfare 2', 'Call Of Duty: Modern Warfare 2', 'Call Of Duty: Modern Warfare 2',
+                'Immortality', 'Immortality', 'Immortality',
+                'Xenoblade Chronicles 3', 'Xenoblade Chronicles 3', 'Xenoblade Chronicles 3',
+                'A Plague Tale: Requiem', 'A Plague Tale: Requiem','A Plague Tale: Requiem','A Plague Tale: Requiem','A Plague Tale: Requiem',
+                'Stray','Stray','Stray','Stray','Stray','Stray',
+                'Horizon Forbidden West','Horizon Forbidden West','Horizon Forbidden West','Horizon Forbidden West','Horizon Forbidden West','Horizon Forbidden West','Horizon Forbidden West',
+                'Elden Ring','Elden Ring','Elden Ring','Elden Ring','Elden Ring','Elden Ring','Elden Ring',
+                'God of War Ragnarök','God of War Ragnarök','God of War Ragnarök','God of War Ragnarök','God of War Ragnarök','God of War Ragnarök','God of War Ragnarök','God of War Ragnarök','God of War Ragnarök','God of War Ragnarök']),
+            'utm_term' => $faker->word,
+            'utm_content' => '',
+        ]);
+    }
 }

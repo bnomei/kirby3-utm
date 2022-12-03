@@ -34,10 +34,11 @@
     },
     "require": {
         "php": ">=8.0",
-        "getkirby/composer-installer": "^1.2",
-        "ext-sqlite3": "*"
+        "ext-sqlite3": "*",
+        "getkirby/composer-installer": "^1.2"
     },
     "require-dev": {
+        "fzaninotto/faker": "^1.5",
         "getkirby/cms": "^3.8.1.1",
         "php-coveralls/php-coveralls": "^2.4",
         "phpunit/phpunit": "^9.5"

@@ -31,6 +31,8 @@ final class Utm
             'ipstack_access_key' => option('bnomei.utm.ipstack.access_key'),
             'ipstack_https' => option('bnomei.utm.ipstack.https') ? 'https' : 'http',
             'stats_range' => option('bnomei.utm.stats.range'),
+            'ratelimit_duration' => option('bnomei.utm.ratelimit.duration'),
+            'ratelimit_trials' => option('bnomei.utm.ratelimit.trials'),
         ];
         $this->options = array_merge($defaults, $options);
 
@@ -87,14 +89,20 @@ final class Utm
 
     public function track(string $id, array $params): bool
     {
+        $ip = $this->option('ip') ?? kirby()->visitor()->ip();
+        $iphash = sha1(__DIR__ . $ip);
+
+        // check rate limit
+        if($this->ratelimit($iphash) === false) {
+            return false;
+        }
+
         $params = $this->sanitize($params);
 
         if (count($params) === 0) {
             return false; // no UTM params at all
         }
 
-        $ip = $this->option('ip') ?? kirby()->visitor()->ip();
-        $iphash = sha1(__DIR__ . $ip);
         $ipdata = $this->ipstack($ip, $iphash);
         $generated = [
             'visited_at' => date('Y-m-d H:i:s', time()),
@@ -205,5 +213,33 @@ final class Utm
     {
         $params = array_map(fn ($param) => \SQLite3::escapeString(strip_tags($param ?? '')), $params);
         return array_filter($params, fn ($param) => !empty($param));
+    }
+
+    private function ratelimit(string $iphash): bool
+    {
+        $cache = kirby()->cache('bnomei.utm');
+        $key = $iphash . '-limit';
+        $limit = $cache->get($key);
+
+        // none yet or time passed
+        if (!$limit ||
+            $limit['time'] + $this->option('ratelimit_duration') < time()) {
+            $cache->set($key, [
+                'time' => time(),
+                'trials' => 1,
+            ]);
+            return true;
+        }
+
+        // below trial limit
+        if($limit['trials'] < $this->option('ratelimit_trials')) {
+            $cache->set($key, [
+                'time' => time(),
+                'trials' => $limit['trials'] + 1,
+            ]);
+            return true;
+        }
+
+        return false; // limit reached
     }
 }
