@@ -64,7 +64,9 @@ class UtmPage extends Page
         $db = Utm::singleton()->database();
 
         $results = $db->query('SELECT distinct(utm_campaign) as title FROM utm');
-        if (!$results) return [];
+        if (!$results) {
+            return [];
+        }
 
         foreach ($results as $campaign) {
             $title = empty($campaign->title) ? 'undefined' : $campaign->title;

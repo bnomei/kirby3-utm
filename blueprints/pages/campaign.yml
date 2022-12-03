@@ -15,6 +15,11 @@ tabs:
       stats:
         width: 1/1
         sections:
+          bar:
+            type: fields
+            fields:
+              utmbar:
+                type: utmbar
           stats:
             type: stats
             reports: page.reports('stats')
@@ -24,12 +29,12 @@ tabs:
           medium:
             type: stats
             reports: page.reports('medium')
-          countries:
+          country:
             type: stats
-            reports: page.reports('countries')
-          cities:
+            reports: page.reports('country')
+          city:
             type: stats
-            reports: page.reports('cities')
+            reports: page.reports('city')
   events:
     sections:
       events:

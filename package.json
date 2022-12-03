@@ -1,0 +1,13 @@
+{
+  "name": "kirby-utm-bar-field",
+  "version": "1.0.0",
+  "description": "Kirby 3 Plugin UTM",
+  "author": "Bruno Meilick <b@bnomei.com>",
+  "scripts": {
+    "dev": "kirbyup src/index.js --watch",
+    "build": "kirbyup src/index.js"
+  },
+  "devDependencies": {
+    "kirbyup": "latest"
+  }
+}

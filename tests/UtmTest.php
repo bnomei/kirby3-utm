@@ -50,7 +50,7 @@ final class UtmTest extends TestCase
             'ratelimit_trials' => 5,
         ]);
 
-        for($n=0;$n<5;$n++) {
+        for ($n=0;$n<5;$n++) {
             $this->assertTrue($utm->track('home', [
                 'utm_source' => 'UTM_SOURCE',
                 'utm_medium' => 'UTM_MEDIUM',
@@ -72,44 +72,38 @@ final class UtmTest extends TestCase
     public function testManyEvents()
     {
         $faker = Faker\Factory::create('en');
-        $utm = \Bnomei\Utm::singleton();
+        $utm = \Bnomei\Utm::singleton([
+            'ratelimit_trials' => 999999,
+        ]);
 
         $count = $utm->count();
 
         $days90to60 = new DatePeriod(new DateTime('now - 90 days'), new DateInterval('P1D'), new DateTime('now - 60 days'));
-        foreach($days90to60 as $day) {
-            $c = 1;
-            $n = $faker->numberBetween(100, 200);
-            while($c <= $n) {
+        foreach ($days90to60 as $day) {
+            for ($c=0; $c<100; $c++) {
                 $this->createEvent($utm, $faker, $day);
-                $c++;
             }
         }
 
         $days60to30 = new DatePeriod(new DateTime('now - 60 days'), new DateInterval('P1D'), new DateTime('now - 30 days'));
-        foreach($days60to30 as $day) {
-            $c = 1;
-            $n = $faker->numberBetween(1, 100);
-            while($c <= $n) {
+        foreach ($days60to30 as $day) {
+            for ($c=0; $c<100; $c++) {
                 $this->createEvent($utm, $faker, $day);
-                $c++;
             }
         }
 
         $days30to0 = new DatePeriod(new DateTime('now - 30 days'), new DateInterval('P1D'), new DateTime('now'));
-        foreach($days30to0 as $day) {
-            $c = 1;
-            $n = $faker->numberBetween(200, 400);
-            while($c <= $n) {
+        foreach ($days30to0 as $day) {
+            for ($c=0; $c<300; $c++) {
                 $this->createEvent($utm, $faker, $day);
-                $c++;
             }
         }
 
         $this->assertTrue($count < $utm->count());
     }
 
-    private function createEvent($utm, $faker, $day) {
+    private function createEvent($utm, $faker, $day)
+    {
         $utm->track('home', [
             'visited_at' => $day->format('Y-m-d') . ' ' . $faker->time('H:i:s', '23:59:59'),
             'iphash' => sha1(__DIR__ . $faker->numberBetween(0, 200)),
@@ -117,7 +111,6 @@ final class UtmTest extends TestCase
                 'England',
                 'France',
                 'Germany',
-                'Ireland',
                 'Switzerland',
                 'USA',
             ]),
@@ -125,7 +118,6 @@ final class UtmTest extends TestCase
                 'London',
                 'Paris',
                 'Berlin',
-                'Dublin',
                 'Zurich',
                 'New York',
             ]),
@@ -144,10 +136,6 @@ final class UtmTest extends TestCase
                 'cpc',
                 'email',
                 'newsletter',
-                'mastodon',
-                'tiktok',
-                'twitter',
-                'website',
             ]),
             'utm_campaign' => $faker->randomElement([
                 'Tunic', 'Tunic', 'Tunic',

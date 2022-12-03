@@ -93,7 +93,7 @@ final class Utm
         $iphash = sha1(__DIR__ . $ip);
 
         // check rate limit
-        if($this->ratelimit($iphash) === false) {
+        if ($this->ratelimit($iphash) === false) {
             return false;
         }
 
@@ -232,7 +232,7 @@ final class Utm
         }
 
         // below trial limit
-        if($limit['trials'] < $this->option('ratelimit_trials')) {
+        if ($limit['trials'] < $this->option('ratelimit_trials')) {
             $cache->set($key, [
                 'time' => time(),
                 'trials' => $limit['trials'] + 1,
@@ -241,5 +241,15 @@ final class Utm
         }
 
         return false; // limit reached
+    }
+
+    public static function sqliteDateRange(int $begin = 7, int $end = 0, string $column = 'visited_at'): string
+    {
+        return " ${column} >= datetime('now', '-${begin} days', 'localtime') AND ${column} <= datetime('now', '-${end} days', 'localtime')";
+    }
+
+    public static function percentChange($recent, $compare): int
+    {
+        return intval($recent / $compare * 100 - 100);
     }
 }
