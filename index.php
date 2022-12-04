@@ -92,7 +92,7 @@ Kirby::plugin('bnomei/utm', [
                     $model = $this->model();
                     $title = $model->title()->value() === 'undefined' ? '' : $model->title()->value();
                     $key = md5($title) . '-bar';
-                    if($data = kirby()->cache('bnomei.utm')->get($key)) {
+                    if (option('debug') !== true && $data = kirby()->cache('bnomei.utm')->get($key)) {
                         return $data;
                     }
                     $utm = \Bnomei\Utm::singleton();
@@ -106,7 +106,7 @@ Kirby::plugin('bnomei/utm', [
                     $max = $events->sortBy('events_count', 'desc')->first()?->events_count ?? 0;
                     $avg = array_sum($events->values(fn ($item) => $item->events_count)) / $events->count();
 
-                    $days = new DatePeriod(new DateTime('now - ' . $utm->option('stats_range') * 2 . ' days'), new DateInterval('P1D'), new DateTime('now'));
+                    $days = new DatePeriod(new DateTime('now - ' . $utm->option('stats_range') * 2 - 1 . ' days'), new DateInterval('P1D'), new DateTime('now + 1 day'));
                     $num = 0;
                     foreach ($days as $day) {
                         $num++;
@@ -128,13 +128,13 @@ Kirby::plugin('bnomei/utm', [
                             }
                         }
                         $data[] = [
-                            'amount' => $amount,
+                            'amount' => $amount, // $amount > 1000 ? ($amount / 1000) . 'k' : $amount,
                             'date' => $day->format(option('bnomei.utm.bar.format', 'Y-m-d')),
                             'style' => "width: ${width}%; height: ${height}px;",
-                            'theme' => $theme,
+                            'theme' => $theme . ($amount > 100 ? ' rotate' : ''),
                         ];
                     }
-                    if (!option('debug')) {
+                    if (option('debug') !== true) {
                         kirby()->cache('bnomei.utm')->set($key, $data, 1);
                     }
                     return $data;

@@ -31,22 +31,18 @@ class UtmPage extends Page
                 [
                     'label' => 'Unique Visitors',
                     'value' => Utm::singleton()->count("SELECT count(distinct(iphash)) AS count FROM utm")
-                    // TODO: percentage increase and theme
                 ],
                 [
                     'label' => 'Mobile',
                     'value' => $useragents->filterBy('user_agent', 'mobile')->first()?->count ?? 0,
-                    // TODO: percentage increase and theme
                 ],
                 [
                     'label' => 'Tablet',
                     'value' => $useragents->filterBy('user_agent', 'tablet')->first()?->count ?? 0
-                    // TODO: percentage increase and theme
                 ],
                 [
                     'label' => 'Desktop',
                     'value' => $useragents->filterBy('user_agent', 'desktop')->first()?->count ?? 0
-                    // TODO: percentage increase and theme
                 ],
             ]
         ];

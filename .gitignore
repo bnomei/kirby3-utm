@@ -36,3 +36,4 @@ node_modules
 
 /tests/.ipstackkey
 /tests/site/logs/*.sqlite
+.nova

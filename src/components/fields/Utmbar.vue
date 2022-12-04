@@ -11,7 +11,7 @@ export default {
   name: 'Utmbar',
   props: {
     data: Array,
-  }
+  },
 }
 </script>
 
@@ -32,6 +32,14 @@ export default {
     display: flex;
     align-items: end;
     justify-content: center;
+    overflow: hidden;
+  }
+  > div.rotate {
+    align-items: center;
+  }
+  > div.rotate > div {
+    transform-origin: center;
+    transform: rotate(-90deg) ;
   }
   > div.positive {
     background: var(--color-green);

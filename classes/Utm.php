@@ -62,7 +62,6 @@ final class Utm
             'type' => 'sqlite',
             'database' => $target,
         ]);
-
         $this->count = [];
     }
 
@@ -106,7 +105,7 @@ final class Utm
 
         $ipdata = $this->ipstack($ip, $iphash);
         $generated = [
-            'visited_at' => date('Y-m-d H:i:s', time()),
+            'visited_at' => time(),
             'iphash' => $iphash,
             'country' => A::get($ipdata, 'country_name', ''),
             'city' => A::get($ipdata, 'city', ''),
@@ -123,6 +122,9 @@ final class Utm
         $utm_term = A::get($params, 'utm_term', '');
         $utm_content = A::get($params, 'utm_content', '');
         $visited_at = A::get($params, 'visited_at', '');
+        if (is_int($visited_at)) {
+            $visited_at = date('Y-m-d H:i:s', $visited_at);
+        }
         $iphash = A::get($params, 'iphash', '');
         $country = A::get($params, 'country', '');
         $city = A::get($params, 'city', '');
@@ -251,6 +253,6 @@ final class Utm
 
     public static function percentChange($recent, $compare): int
     {
-        return intval($recent / $compare * 100 - 100);
+        return $compare > 0 ? intval(round($recent / $compare * 100.0 - 100.0)) : intval(round($recent * 100.0 - 100.0));
     }
 }

@@ -23,15 +23,27 @@ tabs:
           stats:
             type: stats
             reports: page.reports('stats')
+      source:
+        width: 1/4
+        sections:
           source:
             type: stats
             reports: page.reports('source')
+      medium:
+        width: 1/4
+        sections:
           medium:
             type: stats
             reports: page.reports('medium')
+      country:
+        width: 1/4
+        sections:
           country:
             type: stats
             reports: page.reports('country')
+      city:
+        width: 1/4
+        sections:
           city:
             type: stats
             reports: page.reports('city')

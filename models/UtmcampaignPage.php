@@ -55,11 +55,11 @@ class UtmcampaignPage extends Page
                 'unique_visitors_change' => Utm::percentChange($dataRecent->first()->unique_visitors, $dataCompare->first()->unique_visitors),
                 'visited_at' => $data->first()->visited_at,
                 'mobile' => $ua->filterBy('user_agent', 'mobile')->first()?->count ?? 0,
-                'mobile_change' => Utm::percentChange(($ua_queryRecent->filterBy('user_agent', 'mobile')->first()?->count ?? 0), ($ua_queryCompare->filterBy('user_agent', 'mobile')->first()?->count ?? 1)),
+                'mobile_change' => Utm::percentChange(($ua_queryRecent->filterBy('user_agent', 'mobile')->first()?->count ?? 0), ($ua_queryCompare->filterBy('user_agent', 'mobile')->first()?->count ?? 0)),
                 'tablet' => $ua->filterBy('user_agent', 'tablet')->first()?->count ?? 0,
-                'tablet_change' => Utm::percentChange(($ua_queryRecent->filterBy('user_agent', 'tablet')->first()?->count ?? 0), ($ua_queryCompare->filterBy('user_agent', 'tablet')->first()?->count ?? 1)),
+                'tablet_change' => Utm::percentChange(($ua_queryRecent->filterBy('user_agent', 'tablet')->first()?->count ?? 0), ($ua_queryCompare->filterBy('user_agent', 'tablet')->first()?->count ?? 0)),
                 'desktop' => $ua->filterBy('user_agent', 'desktop')->first()?->count ?? 0,
-                'desktop_change' => Utm::percentChange(($ua_queryRecent->filterBy('user_agent', 'desktop')->first()?->count ?? 0), ($ua_queryCompare->filterBy('user_agent', 'desktop')->first()?->count ?? 1) * 100),
+                'desktop_change' => Utm::percentChange(($ua_queryRecent->filterBy('user_agent', 'desktop')->first()?->count ?? 0), ($ua_queryCompare->filterBy('user_agent', 'desktop')->first()?->count ?? 0)),
             ]
         );
 
@@ -110,11 +110,16 @@ class UtmcampaignPage extends Page
                 ],
             ];
         }
+
+        $db = \Bnomei\Utm::singleton()->database();
         if ($group === 'source') {
             $sources = [];
 
-            $data = \Bnomei\Utm::singleton()->database()->query("SELECT distinct(utm_source) AS title, count(*) as count FROM utm WHERE utm_campaign='${title}' GROUP BY utm_source ORDER BY count desc");
+            $data = $db->query("SELECT distinct(utm_source) AS title, count(*) as count FROM utm WHERE utm_campaign='${title}' GROUP BY utm_source ORDER BY count desc LIMIT 5");
             foreach ($data as $source) {
+                if (empty($source->title)) {
+                    continue;
+                }
                 $sources[] = [
                     'label' => $source->title,
                     'value' => $source->count,
@@ -126,8 +131,11 @@ class UtmcampaignPage extends Page
         if ($group === 'medium') {
             $mediums = [];
 
-            $data = \Bnomei\Utm::singleton()->database()->query("SELECT distinct(utm_medium) AS title, count(*) as count FROM utm WHERE utm_campaign='${title}' GROUP BY utm_medium ORDER BY count desc");
+            $data = $db->query("SELECT distinct(utm_medium) AS title, count(*) as count FROM utm WHERE utm_campaign='${title}' GROUP BY utm_medium ORDER BY count desc LIMIT 5");
             foreach ($data as $medium) {
+                if (empty($medium->title)) {
+                    continue;
+                }
                 $mediums[] = [
                     'label' => $medium->title,
                     'value' => $medium->count,
@@ -139,8 +147,11 @@ class UtmcampaignPage extends Page
         if ($group === 'country') {
             $countrys = [];
 
-            $data = \Bnomei\Utm::singleton()->database()->query("SELECT distinct(country_name) AS title, count(*) as count FROM utm WHERE utm_campaign='${title}' GROUP BY country_name ORDER BY count desc");
+            $data = $db->query("SELECT distinct(country_name) AS title, count(*) as count FROM utm WHERE utm_campaign='${title}' GROUP BY country_name ORDER BY count desc LIMIT 5");
             foreach ($data as $country) {
+                if (empty($country->title)) {
+                    continue;
+                }
                 $countrys[] = [
                     'label' => $country->title,
                     'value' => $country->count,
@@ -152,8 +163,11 @@ class UtmcampaignPage extends Page
         if ($group === 'city') {
             $citys = [];
 
-            $data = \Bnomei\Utm::singleton()->database()->query("SELECT distinct(city) AS title, count(*) as count FROM utm WHERE utm_campaign='${title}' GROUP BY city ORDER BY count desc");
+            $data = $db->query("SELECT distinct(city) AS title, count(*) as count FROM utm WHERE utm_campaign='${title}' GROUP BY city ORDER BY count desc LIMIT 5");
             foreach ($data as $city) {
+                if (empty($city->title)) {
+                    continue;
+                }
                 $citys[] = [
                     'label' => $city->title,
                     'value' => $city->count,
