@@ -50,6 +50,9 @@ final class UtmTest extends TestCase
             'ratelimit_trials' => 5,
         ]);
 
+        // flush
+        $utm->database()->execute('DELETE FROM utm WHERE id > 0');
+
         for ($n=0;$n<5;$n++) {
             $this->assertTrue($utm->track('home', [
                 'utm_source' => 'UTM_SOURCE',
@@ -75,6 +78,9 @@ final class UtmTest extends TestCase
         $utm = \Bnomei\Utm::singleton([
             'ratelimit_trials' => 999999,
         ]);
+
+        // flush
+        $utm->database()->execute('DELETE FROM utm WHERE id > 0');
 
         $count = $utm->count();
 
