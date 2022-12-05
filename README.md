@@ -43,6 +43,10 @@ Using download & copy: download [the latest release of this plugin](https://gith
 
 Create a new page at root level with the blueprint `utm`.
 
+![dashboard](https://raw.githubusercontent.com/bnomei/kirby3-utm/main/screenshot-utm-dashboard.png)
+<br>
+![campaign](https://raw.githubusercontent.com/bnomei/kirby3-utm/main/screenshot-utm-campaign.png)
+
 ### Tracking
 
 Events will automatically be tracked to a sqlite database and appear in the UTM page within the panel grouped by campaign and displaying multiple stats.

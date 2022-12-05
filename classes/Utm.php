@@ -27,7 +27,7 @@ final class Utm
             'debug' => option('debug'),
             'enabled' => option('bnomei.utm.enabled'),
             'file' => option('bnomei.utm.sqlite.file'),
-            'ip' => null,
+            'ip' => null, // INTERNAL: only used in testing via $options overwrite
             'ipstack_access_key' => option('bnomei.utm.ipstack.access_key'),
             'ipstack_https' => option('bnomei.utm.ipstack.https') ? 'https' : 'http',
             'ipstack_expire' => option('bnomei.utm.ipstack.expire'),

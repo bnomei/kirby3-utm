@@ -10,14 +10,14 @@ final class UtmTest extends TestCase
 {
     public function testInstance()
     {
-        $utm = \Bnomei\Utm::singleton();
+        $utm = new \Bnomei\Utm();
 
         $this->assertInstanceOf(\Bnomei\Utm::class, $utm);
     }
 
     public function testOption()
     {
-        $utm = \Bnomei\Utm::singleton(['debug' => true]);
+        $utm = new \Bnomei\Utm(['debug' => true]);
 
         $this->assertTrue($utm->option('debug'));
     }
@@ -26,7 +26,7 @@ final class UtmTest extends TestCase
     {
         $id = page('home')->id();
 
-        $utm = \Bnomei\Utm::singleton([
+        $utm = new \Bnomei\Utm([
             'ip' => '169.150.197.101',
             'ipstack_access_key' => F::read(__DIR__ . '/.ipstackkey'),
         ]);
@@ -46,8 +46,9 @@ final class UtmTest extends TestCase
 
     public function testRateLimit()
     {
-        $utm = \Bnomei\Utm::singleton([
+        $utm = new \Bnomei\Utm([
             'ratelimit_trials' => 5,
+            'ip' => '123.123.123.123' // different ip than other tests because of ratelimit
         ]);
 
         // flush
@@ -75,8 +76,8 @@ final class UtmTest extends TestCase
     public function testManyEvents()
     {
         $faker = Faker\Factory::create('en');
-        $utm = \Bnomei\Utm::singleton([
-            'ratelimit_trials' => 999999,
+        $utm = new \Bnomei\Utm([
+            'ratelimit_trials' => 999999, // allow mass creation
         ]);
 
         // flush

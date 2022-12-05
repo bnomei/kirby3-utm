@@ -10,3 +10,4 @@
 /.gitignore         export-ignore
 /.travis.yml        export-ignore
 /phpunit.xml        export-ignore
+/screenshot-*       export-ignore
