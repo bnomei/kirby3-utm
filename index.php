@@ -13,8 +13,8 @@ Kirby::plugin('bnomei/utm', [
         'enabled' => true, // or callback
         'ipstack' => [
             'access_key' => fn () => null, // free key from https://ipstack.com/
-            'https' => false, // only premium accounts can do that
             'expire' => 60*24, // in minutes
+            'https' => false, // only premium accounts can do that
         ],
         'sqlite' => [
             'file' => function () {
@@ -28,10 +28,13 @@ Kirby::plugin('bnomei/utm', [
             'range' => 30, // in days
         ],
         'ratelimit' => [
-            'duration' => 60*60, // 1h in seconds
+            'expire' => 60, // 1h in minutes
             'trials' => 120, // within given duration
         ],
         'cache' => true,
+        'cache.ipstack' => true,
+        'cache.ratelimit' => true,
+        'cache.queries' => true,
     ],
     'blueprints' => [
         'pages/utm' => __DIR__ . '/blueprints/pages/utm.yml',
@@ -92,7 +95,7 @@ Kirby::plugin('bnomei/utm', [
                     $model = $this->model();
                     $title = $model->title()->value() === 'undefined' ? '' : $model->title()->value();
                     $key = md5($title) . '-bar';
-                    if (option('debug') !== true && $data = kirby()->cache('bnomei.utm')->get($key)) {
+                    if (option('debug') !== true && $data = kirby()->cache('bnomei.utm.queries')->get($key)) {
                         return $data;
                     }
                     $utm = \Bnomei\Utm::singleton();
@@ -135,7 +138,7 @@ Kirby::plugin('bnomei/utm', [
                         ];
                     }
                     if (option('debug') !== true) {
-                        kirby()->cache('bnomei.utm')->set($key, $data, 1);
+                        kirby()->cache('bnomei.utm.queries')->set($key, $data, 1);
                     }
                     return $data;
                 },

@@ -11,7 +11,11 @@ class UtmeventPage extends Page
     public function __construct(array $props)
     {
         $title = $props['content']['title'];
-        $data = \Bnomei\Utm::singleton()->database()->query("SELECT * FROM utm WHERE id='${title}'");
+        $query = "SELECT * FROM utm WHERE id='${title}'";
+
+        // NOTE: adding a cache here does not help
+
+        $data = \Bnomei\Utm::singleton()->database()->query($query);
 
         $props['content'] = array_merge(
             $props['content'],

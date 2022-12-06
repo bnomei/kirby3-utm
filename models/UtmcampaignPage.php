@@ -19,36 +19,38 @@ class UtmcampaignPage extends Page
             $title = '';
         }
         $query = "SELECT count(*) as events_count, MAX(visited_at) as visited_at, count(distinct(iphash)) AS unique_visitors FROM utm WHERE utm_campaign='${title}'";
+        $key = md5($query) . '-campaign';
+        $cache = kirby()->cache('bnomei.utm.queries');
+        if ($propsCache = $cache->get($key)) {
+            // will call parent::__construct($props) later
+        } else {
+            $utm = \Bnomei\Utm::singleton();
+            $data = $utm->database()->query($query);
+            $dataRecent = $utm->database()->query($query . ' AND ' . Utm::sqliteDateRange(
+                $utm->option('stats_range'),
+                0,
+                'visited_at'
+            ));
+            $dataCompare = $utm->database()->query($query . ' AND ' . Utm::sqliteDateRange(
+                $utm->option('stats_range') * 2,
+                $utm->option('stats_range'),
+                'visited_at'
+            ));
 
-        $utm = \Bnomei\Utm::singleton();
-        $data = $utm->database()->query($query);
-        $dataRecent = $utm->database()->query($query . ' AND ' . Utm::sqliteDateRange(
-            $utm->option('stats_range'),
-            0,
-            'visited_at'
-        ));
-        $dataCompare = $utm->database()->query($query . ' AND ' . Utm::sqliteDateRange(
-            $utm->option('stats_range') * 2,
-            $utm->option('stats_range'),
-            'visited_at'
-        ));
+            $ua_query = "SELECT user_agent, count(*) AS count FROM utm WHERE utm_campaign='${title}'";
+            $ua = $utm->database()->query($ua_query . ' GROUP BY user_agent');
+            $ua_queryRecent = $utm->database()->query($ua_query . ' AND ' . Utm::sqliteDateRange(
+                $utm->option('stats_range'),
+                0,
+                'visited_at'
+            ) . ' GROUP BY user_agent');
+            $ua_queryCompare = $utm->database()->query($ua_query . ' AND ' . Utm::sqliteDateRange(
+                $utm->option('stats_range') * 2,
+                $utm->option('stats_range'),
+                'visited_at'
+            ) . ' GROUP BY user_agent');
 
-        $ua_query = "SELECT user_agent, count(*) AS count FROM utm WHERE utm_campaign='${title}'";
-        $ua = $utm->database()->query($ua_query . ' GROUP BY user_agent');
-        $ua_queryRecent = $utm->database()->query($ua_query . ' AND ' . Utm::sqliteDateRange(
-            $utm->option('stats_range'),
-            0,
-            'visited_at'
-        ) . ' GROUP BY user_agent');
-        $ua_queryCompare = $utm->database()->query($ua_query . ' AND ' . Utm::sqliteDateRange(
-            $utm->option('stats_range') * 2,
-            $utm->option('stats_range'),
-            'visited_at'
-        ) . ' GROUP BY user_agent');
-
-        $props['content'] = array_merge(
-            $props['content'],
-            [
+            $propsCache = [
                 'events_count' => $data->first()->events_count,
                 'events_count_change' => Utm::percentChange($dataRecent->first()->events_count, $dataCompare->first()->events_count),
                 'unique_visitors' => $data->first()->unique_visitors,
@@ -60,7 +62,14 @@ class UtmcampaignPage extends Page
                 'tablet_change' => Utm::percentChange(($ua_queryRecent->filterBy('user_agent', 'tablet')->first()?->count ?? 0), ($ua_queryCompare->filterBy('user_agent', 'tablet')->first()?->count ?? 0)),
                 'desktop' => $ua->filterBy('user_agent', 'desktop')->first()?->count ?? 0,
                 'desktop_change' => Utm::percentChange(($ua_queryRecent->filterBy('user_agent', 'desktop')->first()?->count ?? 0), ($ua_queryCompare->filterBy('user_agent', 'desktop')->first()?->count ?? 0)),
-            ]
+            ];
+
+            $cache->set($key, $propsCache);
+        }
+
+        $props['content'] = array_merge(
+            $props['content'],
+            $propsCache
         );
 
         parent::__construct($props);
@@ -75,9 +84,13 @@ class UtmcampaignPage extends Page
     {
         $title = $this->title()->value() === 'undefined' ? '' : $this->title()->value();
 
-        // https://getkirby.com/docs/reference/panel/sections/stats
-        if ($group === 'stats') {
-            return [
+        $key = md5($title) . '-reports';
+        $cache = kirby()->cache('bnomei.utm.queries');
+        if ($reports = $cache->get($key)) {
+            // will call Pages::factory later
+        } else {
+            // https://getkirby.com/docs/reference/panel/sections/stats
+            $reports['stats'] = [
                 [
                     'label' => 'Events',
                     'value' => $this->events_count()->toInt(),
@@ -109,12 +122,11 @@ class UtmcampaignPage extends Page
                     'theme' => $this->desktop_change()->toStatsTheme(),
                 ],
             ];
-        }
 
-        $db = \Bnomei\Utm::singleton()->database();
-        if ($group === 'source') {
+
+            $db = \Bnomei\Utm::singleton()->database();
+
             $sources = [];
-
             $data = $db->query("SELECT distinct(utm_source) AS title, count(*) as count FROM utm WHERE utm_campaign='${title}' GROUP BY utm_source ORDER BY count desc LIMIT 5");
             foreach ($data as $source) {
                 if (empty($source->title)) {
@@ -125,12 +137,9 @@ class UtmcampaignPage extends Page
                     'value' => $source->count,
                 ];
             }
-            return $sources;
-        }
+            $reports['source'] = $sources;
 
-        if ($group === 'medium') {
             $mediums = [];
-
             $data = $db->query("SELECT distinct(utm_medium) AS title, count(*) as count FROM utm WHERE utm_campaign='${title}' GROUP BY utm_medium ORDER BY count desc LIMIT 5");
             foreach ($data as $medium) {
                 if (empty($medium->title)) {
@@ -141,12 +150,9 @@ class UtmcampaignPage extends Page
                     'value' => $medium->count,
                 ];
             }
-            return $mediums;
-        }
+            $reports['medium'] = $mediums;
 
-        if ($group === 'country') {
             $countrys = [];
-
             $data = $db->query("SELECT distinct(country_name) AS title, count(*) as count FROM utm WHERE utm_campaign='${title}' GROUP BY country_name ORDER BY count desc LIMIT 5");
             foreach ($data as $country) {
                 if (empty($country->title)) {
@@ -157,12 +163,9 @@ class UtmcampaignPage extends Page
                     'value' => $country->count,
                 ];
             }
-            return $countrys;
-        }
+            $reports['country'] = $countrys;
 
-        if ($group === 'city') {
             $citys = [];
-
             $data = $db->query("SELECT distinct(city) AS title, count(*) as count FROM utm WHERE utm_campaign='${title}' GROUP BY city ORDER BY count desc LIMIT 5");
             foreach ($data as $city) {
                 if (empty($city->title)) {
@@ -173,10 +176,12 @@ class UtmcampaignPage extends Page
                     'value' => $city->count,
                 ];
             }
-            return $citys;
+            $reports['city'] = $citys;
+
+            $cache->set($key, $reports);
         }
 
-        return [];
+        return A::get($reports, $group);
     }
 
     public function children()

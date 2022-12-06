@@ -18,9 +18,6 @@ final class Utm
     /** @var array $options */
     private $options;
 
-    /** @var array $count */
-    private $count;
-
     public function __construct(array $options = [])
     {
         $defaults = [
@@ -32,7 +29,7 @@ final class Utm
             'ipstack_https' => option('bnomei.utm.ipstack.https') ? 'https' : 'http',
             'ipstack_expire' => option('bnomei.utm.ipstack.expire'),
             'stats_range' => option('bnomei.utm.stats.range'),
-            'ratelimit_duration' => option('bnomei.utm.ratelimit.duration'),
+            'ratelimit_expire' => option('bnomei.utm.ratelimit.duration'),
             'ratelimit_trials' => option('bnomei.utm.ratelimit.trials'),
         ];
         $this->options = array_merge($defaults, $options);
@@ -62,7 +59,6 @@ final class Utm
             'type' => 'sqlite',
             'database' => $target,
         ]);
-        $this->count = [];
     }
 
     /**
@@ -132,16 +128,23 @@ final class Utm
 
         $this->database()->query("INSERT INTO utm (page_id, utm_source, utm_medium, utm_campaign, utm_term, utm_content, visited_at, iphash, country_name, city, user_agent) VALUES ('${id}', '${utm_source}', '${utm_medium}', '${utm_campaign}', '${utm_term}', '${utm_content}', '${visited_at}', '${iphash}', '${country}', '${city}', '${useragent}')");
 
-        $this->count = []; // reset static counts cache
+        kirby()->cache('bnomei.utm.queries')->flush();
 
         return true;
     }
 
     public function count(string $query = 'SELECT count(*) AS count FROM utm'): int
     {
-        $key = md5($query);
-        $this->count[$key] = intval($this->database->query($query)->first()->count);
-        return $this->count[$key];
+        $key = md5($query) . '-count';
+        $cache = kirby()->cache('bnomei.utm.queries');
+        if ($data = $cache->get($key)) {
+            return $data;
+        }
+
+        $count = intval($this->database->query($query)->first()->count);
+        $cache->set($key, $count);
+
+        return $count;
     }
 
     public function useragent(): string
@@ -169,7 +172,7 @@ final class Utm
             return [];
         }
 
-        $cache = kirby()->cache('bnomei.utm');
+        $cache = kirby()->cache('bnomei.utm.ipstack');
         $iphash ??= sha1(__DIR__ . $ip);
         if ($data = $cache->get($iphash)) {
             return $data;
@@ -220,13 +223,13 @@ final class Utm
 
     private function ratelimit(string $iphash): bool
     {
-        $cache = kirby()->cache('bnomei.utm');
-        $key = $iphash . '-limit';
+        $cache = kirby()->cache('bnomei.utm.ratelimit');
+        $key = $iphash;
         $limit = $cache->get($key);
 
         // none yet or time passed
         if (!$limit ||
-            $limit['time'] + $this->option('ratelimit_duration') < time()) {
+            $limit['time'] + $this->option('ratelimit_expire') * 60 < time()) {
             $cache->set($key, [
                 'time' => time(),
                 'trials' => 1,
@@ -239,7 +242,7 @@ final class Utm
             $cache->set($key, [
                 'time' => time(),
                 'trials' => $limit['trials'] + 1,
-            ]);
+            ], intval($this->option('ratelimit_expire')));
             return true;
         }
 

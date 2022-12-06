@@ -77,16 +77,19 @@ Used to differentiate similar content or links within the same ad. For example, 
 
 ## Settings
 
-| bnomei.utm.        | Default | Description                                              |
-|--------------------|---------|----------------------------------------------------------|
-| enabled            | `true`  |                                                          |
-| ipstack.access_key | `null`  | string. access key                                       |
-| ipstack.https      | `false` | boolean. if `true` will use premium https endpoint.      |
-| ipstack.expire     | `60*24` | int. cache in minutes for ipstack IP resolution.         |
-| sqlite.file        | `fn()`  | path to sqlite file. like site/logs                      |
-| stats.range        | `30`    | int. half of range of days for bar and change percentage |
-| ratelimit.duration | `60*60` | int. in seconds before trials reset                      |
-| ratelimit.trials   | `120`   | int. number of allowed trials in given duration          |
+| bnomei.utm.        | Default                                                                                          | Description                                              |
+|--------------------|--------------------------------------------------------------------------------------------------|----------------------------------------------------------|
+| enabled            | `true`                                                                                           |                                                          |
+| cache.ipstack      | `true` seperate cache for ip data, expires at ipstack.expire                                     |                                                          |
+| cache.ratelimit    | `true` seperate cache for ratelimit, expires at ratelimit.expire                                 |                                                          |
+| cache.queries      | `true` seperate cache for most queries used in panel, flushes automatically with each event tracked |                                                          |
+| ipstack.access_key | `null`                                                                                           | string. access key                                       |
+| ipstack.https      | `false`                                                                                          | boolean. if `true` will use premium https endpoint.      |
+| ipstack.expire     | `60*24`                                                                                          | int. cache in minutes for ipstack IP resolution.         |
+| sqlite.file        | `fn()`                                                                                           | path to sqlite file. like site/logs                      |
+| stats.range        | `30`                                                                                             | int. half of range of days for bar and change percentage |
+| ratelimit.expire   | `60`                                                                                             | int. in minutes before trials reset                      |
+| ratelimit.trials   | `120`                                                                                            | int. number of allowed trials in given duration          |
 
 
 ## Dependencies
