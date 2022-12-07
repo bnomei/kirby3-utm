@@ -80,9 +80,9 @@ Used to differentiate similar content or links within the same ad. For example, 
 | bnomei.utm.        | Default                                                                                          | Description                                              |
 |--------------------|--------------------------------------------------------------------------------------------------|----------------------------------------------------------|
 | enabled            | `true`                                                                                           |                                                          |
-| cache.ipstack      | `true` seperate cache for ip data, expires at ipstack.expire                                     |                                                          |
-| cache.ratelimit    | `true` seperate cache for ratelimit, expires at ratelimit.expire                                 |                                                          |
-| cache.queries      | `true` seperate cache for most queries used in panel, flushes automatically with each event tracked |                                                          |
+| cache.ipstack      | `true`                                     | seperate cache for ip data, expires at `ipstack.expire`                                                          |
+| cache.ratelimit    | `true`                                  | seperate cache for ratelimit, expires at `ratelimit.expire`                                                         |
+| cache.queries      | `true`  | seperate cache for most queries used in panel, flushes automatically with each event tracked                                                         |
 | ipstack.access_key | `null`                                                                                           | string. access key                                       |
 | ipstack.https      | `false`                                                                                          | boolean. if `true` will use premium https endpoint.      |
 | ipstack.expire     | `60*24`                                                                                          | int. cache in minutes for ipstack IP resolution.         |
