@@ -85,6 +85,10 @@ final class Utm
 
     public function track(string $id, array $params): bool
     {
+        if ($this->option('enabled') !== true) {
+            return false;
+        }
+
         $ip = $this->option('ip') ?? kirby()->visitor()->ip();
         $iphash = sha1(__DIR__ . $ip);
 
