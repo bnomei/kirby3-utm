@@ -11,7 +11,7 @@ class UtmeventPage extends Page
     public function __construct(array $props)
     {
         $title = $props['content']['title'];
-        $query = "SELECT * FROM utm WHERE id='${title}'";
+        $query = "SELECT * FROM utm WHERE id='$title'";
 
         // NOTE: adding a cache here does not help
 

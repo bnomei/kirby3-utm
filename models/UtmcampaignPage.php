@@ -18,7 +18,7 @@ class UtmcampaignPage extends Page
         if ($title === 'undefined') {
             $title = '';
         }
-        $query = "SELECT count(*) as events_count, MAX(visited_at) as visited_at, count(distinct(iphash)) AS unique_visitors FROM utm WHERE utm_campaign='${title}'";
+        $query = "SELECT count(*) as events_count, MAX(visited_at) as visited_at, count(distinct(iphash)) AS unique_visitors FROM utm WHERE utm_campaign='$title'";
         $key = md5($query) . '-campaign';
         $cache = kirby()->cache('bnomei.utm.queries');
         if ($propsCache = $cache->get($key)) {
@@ -37,7 +37,7 @@ class UtmcampaignPage extends Page
                 'visited_at'
             ));
 
-            $ua_query = "SELECT user_agent, count(*) AS count FROM utm WHERE utm_campaign='${title}'";
+            $ua_query = "SELECT user_agent, count(*) AS count FROM utm WHERE utm_campaign='$title'";
             $ua = $utm->database()->query($ua_query . ' GROUP BY user_agent');
             $ua_queryRecent = $utm->database()->query($ua_query . ' AND ' . Utm::sqliteDateRange(
                 $utm->option('stats_range'),
@@ -127,7 +127,7 @@ class UtmcampaignPage extends Page
             $db = \Bnomei\Utm::singleton()->database();
 
             $sources = [];
-            $data = $db->query("SELECT distinct(utm_source) AS title, count(*) as count FROM utm WHERE utm_campaign='${title}' GROUP BY utm_source ORDER BY count desc LIMIT 5");
+            $data = $db->query("SELECT distinct(utm_source) AS title, count(*) as count FROM utm WHERE utm_campaign='$title' GROUP BY utm_source ORDER BY count desc LIMIT 5");
             foreach ($data as $source) {
                 if (empty($source->title)) {
                     continue;
@@ -140,7 +140,7 @@ class UtmcampaignPage extends Page
             $reports['source'] = $sources;
 
             $mediums = [];
-            $data = $db->query("SELECT distinct(utm_medium) AS title, count(*) as count FROM utm WHERE utm_campaign='${title}' GROUP BY utm_medium ORDER BY count desc LIMIT 5");
+            $data = $db->query("SELECT distinct(utm_medium) AS title, count(*) as count FROM utm WHERE utm_campaign='$title' GROUP BY utm_medium ORDER BY count desc LIMIT 5");
             foreach ($data as $medium) {
                 if (empty($medium->title)) {
                     continue;
@@ -153,7 +153,7 @@ class UtmcampaignPage extends Page
             $reports['medium'] = $mediums;
 
             $countrys = [];
-            $data = $db->query("SELECT distinct(country_name) AS title, count(*) as count FROM utm WHERE utm_campaign='${title}' GROUP BY country_name ORDER BY count desc LIMIT 5");
+            $data = $db->query("SELECT distinct(country_name) AS title, count(*) as count FROM utm WHERE utm_campaign='$title' GROUP BY country_name ORDER BY count desc LIMIT 5");
             foreach ($data as $country) {
                 if (empty($country->title)) {
                     continue;
@@ -166,7 +166,7 @@ class UtmcampaignPage extends Page
             $reports['country'] = $countrys;
 
             $citys = [];
-            $data = $db->query("SELECT distinct(city) AS title, count(*) as count FROM utm WHERE utm_campaign='${title}' GROUP BY city ORDER BY count desc LIMIT 5");
+            $data = $db->query("SELECT distinct(city) AS title, count(*) as count FROM utm WHERE utm_campaign='$title' GROUP BY city ORDER BY count desc LIMIT 5");
             foreach ($data as $city) {
                 if (empty($city->title)) {
                     continue;

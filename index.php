@@ -99,7 +99,7 @@ Kirby::plugin('bnomei/utm', [
                         return $data;
                     }
                     $utm = \Bnomei\Utm::singleton();
-                    $query = "SELECT count(*) AS events_count, strftime('%Y/%m/%d', visited_at) AS event_day FROM utm WHERE utm_campaign='${title}' AND " . \Bnomei\Utm::sqliteDateRange(
+                    $query = "SELECT count(*) AS events_count, strftime('%Y/%m/%d', visited_at) AS event_day FROM utm WHERE utm_campaign='$title' AND " . \Bnomei\Utm::sqliteDateRange(
                         $utm->option('stats_range') * 2,
                         0,
                         'visited_at'
@@ -133,7 +133,7 @@ Kirby::plugin('bnomei/utm', [
                         $data[] = [
                             'amount' => $amount, // $amount > 1000 ? ($amount / 1000) . 'k' : $amount,
                             'date' => $day->format(option('bnomei.utm.bar.format', 'Y-m-d')),
-                            'style' => "width: ${width}%; height: ${height}px;",
+                            'style' => "width: $width%; height: $heightpx;",
                             'theme' => $theme . ($amount > 100 ? ' rotate' : ''),
                         ];
                     }

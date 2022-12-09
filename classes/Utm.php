@@ -130,7 +130,7 @@ final class Utm
         $city = A::get($params, 'city', '');
         $useragent = A::get($params, 'useragent', '');
 
-        $this->database()->query("INSERT INTO utm (page_id, utm_source, utm_medium, utm_campaign, utm_term, utm_content, visited_at, iphash, country_name, city, user_agent) VALUES ('${id}', '${utm_source}', '${utm_medium}', '${utm_campaign}', '${utm_term}', '${utm_content}', '${visited_at}', '${iphash}', '${country}', '${city}', '${useragent}')");
+        $this->database()->query("INSERT INTO utm (page_id, utm_source, utm_medium, utm_campaign, utm_term, utm_content, visited_at, iphash, country_name, city, user_agent) VALUES ('$id', '$utm_source', '$utm_medium', '$utm_campaign', '$utm_term', '$utm_content', '$visited_at', '$iphash', '$country', '$city', '$useragent')");
 
         kirby()->cache('bnomei.utm.queries')->flush();
 
@@ -255,7 +255,7 @@ final class Utm
 
     public static function sqliteDateRange(int $begin = 7, int $end = 0, string $column = 'visited_at'): string
     {
-        return " ${column} >= datetime('now', '-${begin} days', 'localtime') AND ${column} <= datetime('now', '-${end} days', 'localtime')";
+        return " $column >= datetime('now', '-$begin days', 'localtime') AND $column <= datetime('now', '-$end days', 'localtime')";
     }
 
     public static function percentChange($recent, $compare): int
