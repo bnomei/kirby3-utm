@@ -133,7 +133,7 @@ Kirby::plugin('bnomei/utm', [
                         $data[] = [
                             'amount' => $amount, // $amount > 1000 ? ($amount / 1000) . 'k' : $amount,
                             'date' => $day->format(option('bnomei.utm.bar.format', 'Y-m-d')),
-                            'style' => "width: $width%; height: $heightpx;",
+                            'style' => "width: {$width}%; height: {$height}px;",
                             'theme' => $theme . ($amount > 100 ? ' rotate' : ''),
                         ];
                     }
