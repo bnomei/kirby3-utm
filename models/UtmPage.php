@@ -75,6 +75,7 @@ class UtmPage extends Page
                 return [];
             }
 
+            $children = [];
             foreach ($results as $campaign) {
                 $title = empty($campaign->title) ? 'undefined' : $campaign->title;
                 $children[] = [
