@@ -63,7 +63,7 @@ Kirby::plugin('bnomei/utm', [
         [
             'pattern' => '(:all)',
             'language' => '*',
-            'action' => function ($language, $id) {
+            'action' => function ($language, $id = null) {
                 if (Str::contains(A::get($_SERVER, 'QUERY_STRING', ''), 'utm_')) {
                     // single lang setup
                     if (kirby()->multilang() === false) {
