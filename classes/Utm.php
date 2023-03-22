@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace Bnomei;
 
+use DeviceDetector\DeviceDetector;
 use Exception;
+use Jaybizzle\CrawlerDetect\CrawlerDetect;
 use Kirby\Database\Database;
 use Kirby\Filesystem\F;
 use Kirby\Http\Remote;
@@ -86,6 +88,14 @@ final class Utm
     public function track(string $id, array $params): bool
     {
         if ($this->option('enabled') !== true) {
+            return false;
+        }
+
+        $useragent = A::get($_SERVER, "HTTP_USER_AGENT", '');
+        $device = new DeviceDetector($useragent);
+        $device->discardBotInformation();
+        $device->parse();
+        if ($device->isBot() || (new CrawlerDetect())->isCrawler($useragent)) {
             return false;
         }
 

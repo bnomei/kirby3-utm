@@ -1,7 +1,7 @@
 {
     "name": "bnomei/kirby3-utm",
     "type": "kirby-plugin",
-    "version": "1.1.6",
+    "version": "1.2.0",
     "license": "MIT",
     "description": "Kirby 3 UTM Tracking",
     "authors": [
@@ -34,6 +34,8 @@
     },
     "require": {
         "php": ">=8.0",
+        "matomo/device-detector": "^6.1",
+        "jaybizzle/crawler-detect": "^1.2",
         "ext-sqlite3": "*",
         "getkirby/composer-installer": "^1.2"
     },

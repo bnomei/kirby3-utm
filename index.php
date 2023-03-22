@@ -106,6 +106,9 @@ Kirby::plugin('bnomei/utm', [
                     ). ' GROUP BY event_day ORDER BY event_day asc';
 
                     $events = $utm->database()->query($query);
+                    if ($events->count() === 0) {
+                        return [];
+                    }
                     $max = $events->sortBy('events_count', 'desc')->first()?->events_count ?? 0;
                     $avg = array_sum($events->values(fn ($item) => $item->events_count)) / $events->count();
 
