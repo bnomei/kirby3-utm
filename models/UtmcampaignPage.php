@@ -184,7 +184,7 @@ class UtmcampaignPage extends Page
         return A::get($reports, $group);
     }
 
-    public function children()
+    public function children(): Pages
     {
         if ($this->children_cache) {
             return $this->children_cache;
