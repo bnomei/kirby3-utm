@@ -28,6 +28,7 @@ Kirby::plugin('bnomei/utm', [
             'range' => 30, // in days
         ],
         'ratelimit' => [
+            'enabled' => false,
             'expire' => 60, // 1h in minutes
             'trials' => 120, // within given duration
         ],

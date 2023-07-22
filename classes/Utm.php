@@ -15,7 +15,7 @@ use Kirby\Toolkit\A;
 final class Utm
 {
     /** @var Database */
-    private $database;
+    private $_database;
 
     /** @var array $options */
     private $options;
@@ -31,6 +31,7 @@ final class Utm
             'ipstack_https' => option('bnomei.utm.ipstack.https') ? 'https' : 'http',
             'ipstack_expire' => option('bnomei.utm.ipstack.expire'),
             'stats_range' => option('bnomei.utm.stats.range'),
+            'ratelimit_enabled' => option('bnomei.utm.ratelimit.enabled'),
             'ratelimit_expire' => option('bnomei.utm.ratelimit.duration'),
             'ratelimit_trials' => option('bnomei.utm.ratelimit.trials'),
         ];
@@ -50,17 +51,7 @@ final class Utm
             }
         }
 
-        $target = $this->options['file'];
-        if (!F::exists($target)) {
-            $db = new \SQLite3($target);
-            $db->exec("CREATE TABLE IF NOT EXISTS utm (ID INTEGER PRIMARY KEY AUTOINCREMENT, page_id TEXT NOT NULL, utm_source TEXT, utm_medium TEXT, utm_campaign TEXT, utm_term TEXT, utm_content TEXT, visited_at DATETIME DEFAULT CURRENT_TIMESTAMP, iphash TEXT, country_name TEXT, city TEXT, user_agent TEXT)");
-            $db->close();
-        }
-
-        $this->database = new Database([
-            'type' => 'sqlite',
-            'database' => $target,
-        ]);
+        // db is lazy loaded on first call
     }
 
     /**
@@ -77,12 +68,26 @@ final class Utm
 
     public function databaseFile(): string
     {
-        return $this->options['file'];
+        return $this->option('file');
     }
 
     public function database(): Database
     {
-        return $this->database;
+        // lazy load the db as late, so its not loaded if disabled
+        if (!$this->_database) {
+            $target = $this->databaseFile();
+            if (!F::exists($target)) {
+                $db = new \SQLite3($target);
+                $db->exec("CREATE TABLE IF NOT EXISTS utm (ID INTEGER PRIMARY KEY AUTOINCREMENT, page_id TEXT NOT NULL, utm_source TEXT, utm_medium TEXT, utm_campaign TEXT, utm_term TEXT, utm_content TEXT, visited_at DATETIME DEFAULT CURRENT_TIMESTAMP, iphash TEXT, country_name TEXT, city TEXT, user_agent TEXT)");
+                $db->close();
+            }
+
+            $this->_database = new Database([
+                'type' => 'sqlite',
+                'database' => $target,
+            ]);
+        }
+        return $this->_database;
     }
 
     public function track(string $id, array $params): bool
@@ -149,13 +154,17 @@ final class Utm
 
     public function count(string $query = 'SELECT count(*) AS count FROM utm'): int
     {
+        if ($this->option('enabled') !== true) {
+            return 0;
+        }
+
         $key = md5($query) . '-count';
         $cache = kirby()->cache('bnomei.utm.queries');
         if ($data = $cache->get($key)) {
             return $data;
         }
 
-        $count = intval($this->database->query($query)->first()->count);
+        $count = intval($this->database()->query($query)->first()->count);
         $cache->set($key, $count);
 
         return $count;
@@ -182,7 +191,7 @@ final class Utm
         $key = $this->option('ipstack_access_key');
 
         // ip could be empty on unittests
-        if (empty($ip) || empty($key)) {
+        if (empty($ip) || empty($key) || $this->option('enabled') !== true) {
             return [];
         }
 
@@ -237,6 +246,10 @@ final class Utm
 
     private function ratelimit(string $iphash): bool
     {
+        if ($this->option('ratelimit_enabled') !== true) {
+            return true;
+        }
+
         $cache = kirby()->cache('bnomei.utm.ratelimit');
         $key = $iphash;
         $limit = $cache->get($key);
