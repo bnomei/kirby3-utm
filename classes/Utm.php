@@ -258,7 +258,6 @@ final class Utm
 
     private function ratelimit(string $iphash): bool
     {
-        ray('ratelimit_enabled', $this->option('ratelimit_enabled') === true);
         if ($this->option('ratelimit_enabled') !== true) {
             return true;
         }
@@ -274,7 +273,6 @@ final class Utm
                 'time' => time(),
                 'trials' => 1,
             ]);
-            ray('ratelimit none yet or time passed');
             return true;
         }
 
@@ -284,7 +282,6 @@ final class Utm
                 'time' => time(),
                 'trials' => $limit['trials'] + 1,
             ], intval($this->option('ratelimit_expire')));
-            ray('ratelimit below trial limit');
             return true;
         }
 
