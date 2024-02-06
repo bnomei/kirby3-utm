@@ -11,3 +11,4 @@
 /.travis.yml        export-ignore
 /phpunit.xml        export-ignore
 /screenshot-*       export-ignore
+/ray.php            export-ignore
