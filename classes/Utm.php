@@ -34,6 +34,8 @@ final class Utm
             'ratelimit_enabled' => option('bnomei.utm.ratelimit.enabled'),
             'ratelimit_expire' => option('bnomei.utm.ratelimit.duration'),
             'ratelimit_trials' => option('bnomei.utm.ratelimit.trials'),
+            'CrawlerDetect' => option('bnomei.utm.botDetection.CrawlerDetect'),
+            'DeviceDetector' => option('bnomei.utm.botDetection.DeviceDetector'),
         ];
         $this->options = array_merge($defaults, $options);
 
@@ -96,12 +98,10 @@ final class Utm
             return false;
         }
 
-        $useragent = A::get($_SERVER, "HTTP_USER_AGENT", '');
-        $device = new DeviceDetector($useragent);
-        $device->discardBotInformation();
-        $device->parse();
-        if ($device->isBot() || (new CrawlerDetect())->isCrawler($useragent)) {
-            return false;
+        $params = $this->sanitize($params);
+
+        if (count($params) === 0) {
+            return false; // no UTM params at all
         }
 
         $ip = $this->option('ip') ?? kirby()->visitor()->ip();
@@ -112,10 +112,22 @@ final class Utm
             return false;
         }
 
-        $params = $this->sanitize($params);
+        $useragent = A::get($_SERVER, "HTTP_USER_AGENT", '');
 
-        if (count($params) === 0) {
-            return false; // no UTM params at all
+        if ($this->option('CrawlerDetect')) {
+            $isCrawler = (new CrawlerDetect())->isCrawler($useragent);  // ~10ms
+            if ($isCrawler) {
+                return false;
+            }
+        }
+
+        if ($this->option('DeviceDetector')) {
+            $device = new DeviceDetector($useragent);
+            $device->discardBotInformation();
+            $device->parse(); // ~40ms
+            if ($device->isBot()) {
+                return false;
+            }
         }
 
         $ipdata = $this->ipstack($ip, $iphash);
@@ -246,6 +258,7 @@ final class Utm
 
     private function ratelimit(string $iphash): bool
     {
+        ray('ratelimit_enabled', $this->option('ratelimit_enabled') === true);
         if ($this->option('ratelimit_enabled') !== true) {
             return true;
         }
@@ -261,6 +274,7 @@ final class Utm
                 'time' => time(),
                 'trials' => 1,
             ]);
+            ray('ratelimit none yet or time passed');
             return true;
         }
 
@@ -270,6 +284,7 @@ final class Utm
                 'time' => time(),
                 'trials' => $limit['trials'] + 1,
             ], intval($this->option('ratelimit_expire')));
+            ray('ratelimit below trial limit');
             return true;
         }
 

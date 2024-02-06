@@ -24,11 +24,15 @@ Kirby::plugin('bnomei/utm', [
                 return kirby()->roots()->logs() . '/utm.sqlite';
             },
         ],
+        'botDetection' => [
+            'CrawlerDetect' => true, // almost no overhead, ~10ms
+            'DeviceDetector' => true, // ~40ms
+        ],
         'stats' => [
             'range' => 30, // in days
         ],
         'ratelimit' => [
-            'enabled' => false,
+            'enabled' => true,
             'expire' => 60, // 1h in minutes
             'trials' => 120, // within given duration
         ],

@@ -1,8 +1,8 @@
 <?php return array(
     'root' => array(
         'name' => 'bnomei/kirby3-utm',
-        'pretty_version' => '1.3.0',
-        'version' => '1.3.0.0',
+        'pretty_version' => '1.4.0',
+        'version' => '1.4.0.0',
         'reference' => NULL,
         'type' => 'kirby-plugin',
         'install_path' => __DIR__ . '/../../',
@@ -11,8 +11,8 @@
     ),
     'versions' => array(
         'bnomei/kirby3-utm' => array(
-            'pretty_version' => '1.3.0',
-            'version' => '1.3.0.0',
+            'pretty_version' => '1.4.0',
+            'version' => '1.4.0.0',
             'reference' => NULL,
             'type' => 'kirby-plugin',
             'install_path' => __DIR__ . '/../../',
@@ -29,18 +29,18 @@
             'dev_requirement' => false,
         ),
         'jaybizzle/crawler-detect' => array(
-            'pretty_version' => 'v1.2.115',
-            'version' => '1.2.115.0',
-            'reference' => '4531e4a70d55d10cbe7d41ac1ff0d75a5fe2ef1e',
+            'pretty_version' => 'v1.2.116',
+            'version' => '1.2.116.0',
+            'reference' => '97e9fe30219e60092e107651abb379a38b342921',
             'type' => 'library',
             'install_path' => __DIR__ . '/../jaybizzle/crawler-detect',
             'aliases' => array(),
             'dev_requirement' => false,
         ),
         'matomo/device-detector' => array(
-            'pretty_version' => '6.1.3',
-            'version' => '6.1.3.0',
-            'reference' => '3e0fac7e77f3faadc3858fea9f5fa7efeb9cf239',
+            'pretty_version' => '6.2.1',
+            'version' => '6.2.1.0',
+            'reference' => '19138b0c4b9ddf4ffd8e423d6af3764b7317cb0b',
             'type' => 'library',
             'install_path' => __DIR__ . '/../matomo/device-detector',
             'aliases' => array(),
@@ -58,7 +58,7 @@
         'piwik/device-detector' => array(
             'dev_requirement' => false,
             'replaced' => array(
-                0 => '6.1.3',
+                0 => '6.2.1',
             ),
         ),
     ),
