@@ -10,7 +10,7 @@ use Kirby\Toolkit\Str;
 
 class UtmcampaignPage extends Page
 {
-    private $children_cache;
+    private ?Pages $children_cache = null;
 
     public function __construct(array $props)
     {
@@ -19,36 +19,36 @@ class UtmcampaignPage extends Page
             $title = '';
         }
         $query = "SELECT count(*) as events_count, MAX(visited_at) as visited_at, count(distinct(iphash)) AS unique_visitors FROM utm WHERE utm_campaign='$title'";
-        $key = md5($query) . '-campaign';
+        $key = md5($query).'-campaign';
         $cache = kirby()->cache('bnomei.utm.queries');
         if ($propsCache = $cache->get($key)) {
             // will call parent::__construct($props) later
         } else {
             $utm = \Bnomei\Utm::singleton();
             $data = $utm->database()->query($query);
-            $dataRecent = $utm->database()->query($query . ' AND ' . Utm::sqliteDateRange(
-                $utm->option('stats_range'),
+            $dataRecent = $utm->database()->query($query.' AND '.Utm::sqliteDateRange(
+                intval($utm->option('stats_range')),
                 0,
                 'visited_at'
             ));
-            $dataCompare = $utm->database()->query($query . ' AND ' . Utm::sqliteDateRange(
-                $utm->option('stats_range') * 2,
-                $utm->option('stats_range'),
+            $dataCompare = $utm->database()->query($query.' AND '.Utm::sqliteDateRange(
+                intval($utm->option('stats_range')) * 2,
+                intval($utm->option('stats_range')),
                 'visited_at'
             ));
 
             $ua_query = "SELECT user_agent, count(*) AS count FROM utm WHERE utm_campaign='$title'";
-            $ua = $utm->database()->query($ua_query . ' GROUP BY user_agent');
-            $ua_queryRecent = $utm->database()->query($ua_query . ' AND ' . Utm::sqliteDateRange(
-                $utm->option('stats_range'),
+            $ua = $utm->database()->query($ua_query.' GROUP BY user_agent');
+            $ua_queryRecent = $utm->database()->query($ua_query.' AND '.Utm::sqliteDateRange(
+                intval($utm->option('stats_range')),
                 0,
                 'visited_at'
-            ) . ' GROUP BY user_agent');
-            $ua_queryCompare = $utm->database()->query($ua_query . ' AND ' . Utm::sqliteDateRange(
-                $utm->option('stats_range') * 2,
-                $utm->option('stats_range'),
+            ).' GROUP BY user_agent');
+            $ua_queryCompare = $utm->database()->query($ua_query.' AND '.Utm::sqliteDateRange(
+                intval($utm->option('stats_range')) * 2,
+                intval($utm->option('stats_range')),
                 'visited_at'
-            ) . ' GROUP BY user_agent');
+            ).' GROUP BY user_agent');
 
             $propsCache = [
                 'events_count' => $data->first()->events_count,
@@ -75,7 +75,7 @@ class UtmcampaignPage extends Page
         parent::__construct($props);
     }
 
-    public function uuid(): \Kirby\Uuid\Uuid|null
+    public function uuid(): ?\Kirby\Uuid\Uuid
     {
         return null;
     }
@@ -84,7 +84,7 @@ class UtmcampaignPage extends Page
     {
         $title = $this->title()->value() === 'undefined' ? '' : $this->title()->value();
 
-        $key = md5($title) . '-reports';
+        $key = md5($title).'-reports';
         $cache = kirby()->cache('bnomei.utm.queries');
         if ($reports = $cache->get($key)) {
             // will call Pages::factory later
@@ -122,7 +122,6 @@ class UtmcampaignPage extends Page
                     'theme' => $this->desktop_change()->toStatsTheme(),
                 ],
             ];
-
 
             $db = \Bnomei\Utm::singleton()->database();
 
@@ -193,8 +192,8 @@ class UtmcampaignPage extends Page
         $children = [];
         $db = Utm::singleton()->database();
 
-        $results = $db->query("SELECT id as title FROM utm WHERE utm_campaign='" . $this->title()->value() . "'");
-        if (!$results) {
+        $results = $db->query("SELECT id as title FROM utm WHERE utm_campaign='".$this->title()->value()."'");
+        if (! $results) {
             return [];
         }
         foreach ($results as $event) {
@@ -207,11 +206,12 @@ class UtmcampaignPage extends Page
                 'content' => [
                     'title' => $title,
                     // other props are loaded on construction
-                ]
+                ],
             ];
         }
 
         $this->children_cache = Pages::factory($children, $this);
+
         return $this->children_cache;
     }
 }

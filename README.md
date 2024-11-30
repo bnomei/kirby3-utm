@@ -1,27 +1,19 @@
 # Kirby UTM
 
-![Release](https://flat.badgen.net/packagist/v/bnomei/kirby3-utm?color=ae81ff)
-![Downloads](https://flat.badgen.net/packagist/dt/bnomei/kirby3-utm?color=272822)
-[![Build Status](https://flat.badgen.net/travis/bnomei/kirby3-utm)](https://travis-ci.com/bnomei/kirby3-utm)
-[![Coverage Status](https://flat.badgen.net/coveralls/c/github/bnomei/kirby3-utm)](https://coveralls.io/github/bnomei/kirby3-utm)
-[![Maintainability](https://flat.badgen.net/codeclimate/maintainability/bnomei/kirby3-utm)](https://codeclimate.com/github/bnomei/kirby3-utm)
-[![Twitter](https://flat.badgen.net/badge/twitter/bnomei?color=66d9ef)](https://twitter.com/bnomei)
+[![Kirby 5](https://flat.badgen.net/badge/Kirby/5?color=ECC748)](https://getkirby.com)
+![PHP 8.2](https://flat.badgen.net/badge/PHP/8.2?color=4E5B93&icon=php&label)
+![Release](https://flat.badgen.net/packagist/v/bnomei/kirby3-utm?color=ae81ff&icon=github&label)
+![Downloads](https://flat.badgen.net/packagist/dt/bnomei/kirby3-utm?color=272822&icon=github&label)
+[![Coverage](https://flat.badgen.net/codeclimate/coverage/bnomei/kirby3-utm?icon=codeclimate&label)](https://codeclimate.com/github/bnomei/kirby3-utm)
+[![Maintainability](https://flat.badgen.net/codeclimate/maintainability/bnomei/kirby3-utm?icon=codeclimate&label)](https://codeclimate.com/github/bnomei/kirby3-utm/issues)
+[![Discord](https://flat.badgen.net/badge/discord/bnomei?color=7289da&icon=discord&label)](https://discordapp.com/users/bnomei)
+[![Buymecoffee](https://flat.badgen.net/badge/icon/donate?icon=buymeacoffee&color=FF813F&label)](https://www.buymeacoffee.com/bnomei)
 
-## Install
+## Installation
 
-Using composer:
-
-```bash
-composer require bnomei/kirby3-utm
-```
-
-Using git submodules:
-
-```bash
-git submodule add https://github.com/bnomei/kirby3-utm.git site/plugins/kirby3-utm
-```
-
-Using download & copy: download [the latest release of this plugin](https://github.com/bnomei/kirby3-utm/releases) then unzip and copy it to `site/plugins`
+- unzip [master.zip](https://github.com/bnomei/kirby3-utm/archive/master.zip) as folder `site/plugins/kirby3-utm` or
+- `git submodule add https://github.com/bnomei/kirby3-utm.git site/plugins/kirby3-utm` or
+- `composer require bnomei/kirby3-utm`
 
 ## Usage
 
@@ -60,6 +52,31 @@ Identify paid search keywords. If you’re manually tagging paid keyword campaig
 ### utm_content
 
 Used to differentiate similar content or links within the same ad. For example, if you have two call-to-action links within the same email message, you can use utm_content and set different values for each so you can tell which version is more effective. (i.e. image, button, headline)
+
+## Cache
+
+> [!WARNING]
+> If **global** debug mode is `true,` the plugin will flush its cache and not write any more caches.
+
+For best performance, set either the [global or plugin-specific cache driver](https://getkirby.com/docs/reference/system/options/cache) to one using the server's memory, not the default using files on the hard disk (even on SSDs). If available, I suggest Redis/APCu or leave it at `file` otherwise.
+
+**site/config/config.php**
+```php
+return [
+  'cache' => [
+    'driver' => 'apcu', // or redis
+  ],
+  'bnomei.utm.cache.ipstack' => [
+    'type' => 'apcu', // or redis
+  ],
+  'bnomei.utm.cache.ratelimit' => [
+    'type' => 'apcu', // or redis
+  ],
+  'bnomei.utm.cache.queries' => [
+    'type' => 'apcu', // or redis
+  ],
+];
+```
 
 ## Settings
 

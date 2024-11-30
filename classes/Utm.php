@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Bnomei;
 
+use Closure;
 use DeviceDetector\DeviceDetector;
 use Exception;
 use Jaybizzle\CrawlerDetect\CrawlerDetect;
@@ -14,15 +15,13 @@ use Kirby\Toolkit\A;
 
 final class Utm
 {
-    /** @var Database */
-    private $_database;
+    private ?Database $_database = null;
 
-    /** @var array $options */
-    private $options;
+    private array $options;
 
     public function __construct(array $options = [])
     {
-        $defaults = [
+        $this->options = array_merge([
             'debug' => option('debug'),
             'enabled' => option('bnomei.utm.enabled'),
             'file' => option('bnomei.utm.sqlite.file'),
@@ -36,11 +35,10 @@ final class Utm
             'ratelimit_trials' => option('bnomei.utm.ratelimit.trials'),
             'CrawlerDetect' => option('bnomei.utm.botDetection.CrawlerDetect'),
             'DeviceDetector' => option('bnomei.utm.botDetection.DeviceDetector'),
-        ];
-        $this->options = array_merge($defaults, $options);
+        ], $options);
 
         foreach ($this->options as $key => $call) {
-            if (!is_string($call) && is_callable($call) && in_array($key, ['ip', 'ipstack_access_key', 'enabled', 'file'])) {
+            if ($call instanceof Closure && in_array($key, ['ip', 'ipstack_access_key', 'enabled', 'file'])) {
                 $this->options[$key] = $call();
             }
         }
@@ -56,31 +54,28 @@ final class Utm
         // db is lazy loaded on first call
     }
 
-    /**
-     * @param string|null $key
-     * @return array|mixed
-     */
-    public function option(?string $key = null)
+    public function option(?string $key = null): mixed
     {
         if ($key) {
             return A::get($this->options, $key);
         }
+
         return $this->options;
     }
 
     public function databaseFile(): string
     {
-        return $this->option('file');
+        return strval($this->option('file'));
     }
 
     public function database(): Database
     {
         // lazy load the db as late, so its not loaded if disabled
-        if (!$this->_database) {
+        if (! $this->_database) {
             $target = $this->databaseFile();
-            if (!F::exists($target)) {
+            if (! F::exists($target)) {
                 $db = new \SQLite3($target);
-                $db->exec("CREATE TABLE IF NOT EXISTS utm (ID INTEGER PRIMARY KEY AUTOINCREMENT, page_id TEXT NOT NULL, utm_source TEXT, utm_medium TEXT, utm_campaign TEXT, utm_term TEXT, utm_content TEXT, visited_at DATETIME DEFAULT CURRENT_TIMESTAMP, iphash TEXT, country_name TEXT, city TEXT, user_agent TEXT)");
+                $db->exec('CREATE TABLE IF NOT EXISTS utm (ID INTEGER PRIMARY KEY AUTOINCREMENT, page_id TEXT NOT NULL, utm_source TEXT, utm_medium TEXT, utm_campaign TEXT, utm_term TEXT, utm_content TEXT, visited_at DATETIME DEFAULT CURRENT_TIMESTAMP, iphash TEXT, country_name TEXT, city TEXT, user_agent TEXT)');
                 $db->close();
             }
 
@@ -89,6 +84,7 @@ final class Utm
                 'database' => $target,
             ]);
         }
+
         return $this->_database;
     }
 
@@ -105,17 +101,17 @@ final class Utm
         }
 
         $ip = $this->option('ip') ?? kirby()->visitor()->ip();
-        $iphash = sha1(__DIR__ . $ip);
+        $iphash = sha1(__DIR__.strval($ip));
 
         // check rate limit
         if ($this->ratelimit($iphash) === false) {
             return false;
         }
 
-        $useragent = A::get($_SERVER, "HTTP_USER_AGENT", '');
+        $useragent = A::get($_SERVER, 'HTTP_USER_AGENT', '');
 
         if ($this->option('CrawlerDetect')) {
-            $isCrawler = (new CrawlerDetect())->isCrawler($useragent);  // ~10ms
+            $isCrawler = (new CrawlerDetect)->isCrawler($useragent);  // ~10ms
             if ($isCrawler) {
                 return false;
             }
@@ -130,7 +126,7 @@ final class Utm
             }
         }
 
-        $ipdata = $this->ipstack($ip, $iphash);
+        $ipdata = $this->ipstack(strval($ip), $iphash);
         $generated = [
             'visited_at' => time(),
             'iphash' => $iphash,
@@ -170,7 +166,7 @@ final class Utm
             return 0;
         }
 
-        $key = md5($query) . '-count';
+        $key = md5($query).'-count';
         $cache = kirby()->cache('bnomei.utm.queries');
         if ($data = $cache->get($key)) {
             return $data;
@@ -184,12 +180,12 @@ final class Utm
 
     public function useragent(): string
     {
-        $ua = strtolower(A::get($_SERVER, "HTTP_USER_AGENT", ''));
-        $isMob = is_numeric(strpos($ua, "mobile"));
+        $ua = strtolower(A::get($_SERVER, 'HTTP_USER_AGENT', ''));
+        $isMob = is_numeric(strpos($ua, 'mobile'));
         if ($isMob) {
             return 'mobile';
         }
-        $isTab = is_numeric(strpos($ua, "tablet"));
+        $isTab = is_numeric(strpos($ua, 'tablet'));
         if ($isTab) {
             return 'tablet';
         }
@@ -198,9 +194,9 @@ final class Utm
         return 'desktop';
     }
 
-    public function ipstack(string $ip, string $iphash = null): array
+    public function ipstack(string $ip, ?string $iphash = null): array
     {
-        $key = $this->option('ipstack_access_key');
+        $key = strval($this->option('ipstack_access_key'));
 
         // ip could be empty on unittests
         if (empty($ip) || empty($key) || $this->option('enabled') !== true) {
@@ -208,18 +204,18 @@ final class Utm
         }
 
         $cache = kirby()->cache('bnomei.utm.ipstack');
-        $iphash ??= sha1(__DIR__ . $ip);
+        $iphash ??= sha1(__DIR__.$ip);
         if ($data = $cache->get($iphash)) {
-            return $data;
+            return is_array($data) ? $data : [];
         }
 
-        $https = $this->option('ipstack_https');
-        $url = $https . "://api.ipstack.com/" . $ip . "/?access_key=" . $key;
+        $https = strval($this->option('ipstack_https'));
+        $url = $https.'://api.ipstack.com/'.$ip.'/?access_key='.$key;
         try {
             $response = Remote::get($url);
-            $ipdata = $response->code() === 200 ?
-                @json_decode($response->content(), true) :
-                null;
+            $ipdata = $response->code() === 200 && $response->content() ?
+                (array) @json_decode($response->content(), true) :
+                [];
         } catch (\Exception $e) {
             $ipdata = [
                 'ip' => $ip,
@@ -234,26 +230,22 @@ final class Utm
         return $ipdata;
     }
 
-    /** @var Utm */
-    private static $singleton;
+    private static ?self $singleton = null;
 
-    /**
-     * @param array $options
-     * @return Utm
-     */
-    public static function singleton(array $options = [])
+    public static function singleton(array $options = []): self
     {
-        if (!self::$singleton) {
+        if (self::$singleton === null) {
             self::$singleton = new self($options);
         }
 
         return self::$singleton;
     }
 
-    private function sanitize(array $params)
+    private function sanitize(array $params): array
     {
         $params = array_map(fn ($param) => \SQLite3::escapeString(strip_tags($param ?? '')), $params);
-        return array_filter($params, fn ($param) => !empty($param));
+
+        return array_filter($params, fn ($param) => ! empty($param));
     }
 
     private function ratelimit(string $iphash): bool
@@ -267,12 +259,13 @@ final class Utm
         $limit = $cache->get($key);
 
         // none yet or time passed
-        if (!$limit ||
-            $limit['time'] + $this->option('ratelimit_expire') * 60 < time()) {
+        if (! $limit ||
+            time() > $limit['time'] + intval($this->option('ratelimit_expire')) * 60) {
             $cache->set($key, [
                 'time' => time(),
                 'trials' => 1,
             ]);
+
             return true;
         }
 
@@ -282,6 +275,7 @@ final class Utm
                 'time' => time(),
                 'trials' => $limit['trials'] + 1,
             ], intval($this->option('ratelimit_expire')));
+
             return true;
         }
 
@@ -293,7 +287,7 @@ final class Utm
         return " $column >= datetime('now', '-$begin days', 'localtime') AND $column <= datetime('now', '-$end days', 'localtime')";
     }
 
-    public static function percentChange($recent, $compare): int
+    public static function percentChange(float|int $recent, float|int $compare): int
     {
         return $compare > 0 ? intval(round($recent / $compare * 100.0 - 100.0)) : intval(round($recent * 100.0 - 100.0));
     }

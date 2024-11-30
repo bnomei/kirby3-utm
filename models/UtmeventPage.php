@@ -2,7 +2,6 @@
 
 declare(strict_types=1);
 
-use Bnomei\Utm;
 use Kirby\Cms\Page;
 use Kirby\Toolkit\A;
 
@@ -37,7 +36,7 @@ class UtmeventPage extends Page
         parent::__construct($props);
     }
 
-    public function uuid(): \Kirby\Uuid\Uuid|null
+    public function uuid(): ?\Kirby\Uuid\Uuid
     {
         return null;
     }
