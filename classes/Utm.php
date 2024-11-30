@@ -172,7 +172,8 @@ final class Utm
             return $data;
         }
 
-        $count = intval($this->database()->query($query)->first()->count);
+        $r = $this->database()->query($query);
+        $count = $r !== false ? intval($r->first()->count) : 0;
         $cache->set($key, $count);
 
         return $count;
