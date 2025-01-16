@@ -288,8 +288,8 @@ final class Utm
         return " $column >= datetime('now', '-$begin days', 'localtime') AND $column <= datetime('now', '-$end days', 'localtime')";
     }
 
-    public static function percentChange(float|int $recent, float|int $compare): int
+    public static function percentChange(string|float|int $recent, string|float|int $compare): int
     {
-        return $compare > 0 ? intval(round($recent / $compare * 100.0 - 100.0)) : intval(round($recent * 100.0 - 100.0));
+        return $compare > 0 ? intval(round(floatval($recent) / floatval($compare) * 100.0 - 100.0)) : intval(round(floatval($recent) * 100.0 - 100.0));
     }
 }

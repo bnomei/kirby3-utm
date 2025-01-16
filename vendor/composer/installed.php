@@ -1,8 +1,8 @@
 <?php return array(
     'root' => array(
         'name' => 'bnomei/kirby3-utm',
-        'pretty_version' => '5.0.1',
-        'version' => '5.0.1.0',
+        'pretty_version' => '5.0.2',
+        'version' => '5.0.2.0',
         'reference' => null,
         'type' => 'kirby-plugin',
         'install_path' => __DIR__ . '/../../',
@@ -11,8 +11,8 @@
     ),
     'versions' => array(
         'bnomei/kirby3-utm' => array(
-            'pretty_version' => '5.0.1',
-            'version' => '5.0.1.0',
+            'pretty_version' => '5.0.2',
+            'version' => '5.0.2.0',
             'reference' => null,
             'type' => 'kirby-plugin',
             'install_path' => __DIR__ . '/../../',
@@ -38,9 +38,9 @@
             'dev_requirement' => false,
         ),
         'matomo/device-detector' => array(
-            'pretty_version' => '6.4.1',
-            'version' => '6.4.1.0',
-            'reference' => '0d364e0dd6c177da3c24cd4049178026324fd7ac',
+            'pretty_version' => '6.4.2',
+            'version' => '6.4.2.0',
+            'reference' => '806e52d214b05ddead1a1d4304c7592f61f95976',
             'type' => 'library',
             'install_path' => __DIR__ . '/../matomo/device-detector',
             'aliases' => array(),
@@ -58,7 +58,7 @@
         'piwik/device-detector' => array(
             'dev_requirement' => false,
             'replaced' => array(
-                0 => '6.4.1',
+                0 => '6.4.2',
             ),
         ),
     ),
