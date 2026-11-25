@@ -13,15 +13,15 @@ options:
 columns:
   stats:
     width: 1/1
-    sections:
+    fields:
       stats:
         type: stats
         reports: page.reports('stats')
   pages:
     width: 1/1
-    sections:
+    fields:
       campaigns:
-        type: pages
+        type: pagelist
         create: false
         image: false
         search: true # only titles
@@ -33,5 +33,5 @@ columns:
           unique_visitors: true
           visited_at: true
         # TODO: columns
-        templates:
+        blueprints:
           - utm-campaign

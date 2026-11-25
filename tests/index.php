@@ -1,13 +1,19 @@
 <?php
 
-use Spatie\Ray\Ray;
+require_once __DIR__.'/vendor/autoload.php';
 
-const KIRBY_HELPER_DUMP = false;
-require_once __DIR__.'/../vendor/autoload.php';
-
-if (class_exists(Ray::class)) {
-    Ray::$enabled = false;
-    Ray::$fakeUuid = '00000000-0000-4000-8000-000000000000';
+$roots = [
+    'index' => __DIR__,
+    'media' => __DIR__.'/public/media',
+];
+if (getenv('APP_ENV') === 'testing') {
+    $roots['logs'] = __DIR__.'/logs';
+    $roots['cache'] = __DIR__.'/logs/cache';
+}
+if ($runtime = getenv('UTM_PANEL_TEST_ROOT')) {
+    foreach (['accounts', 'sessions', 'cache', 'logs'] as $name) {
+        $roots[$name] = $runtime.'/'.$name;
+    }
 }
 
-echo (new Kirby)->render();
+return new Kirby(['roots' => $roots]);

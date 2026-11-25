@@ -5,7 +5,6 @@ declare(strict_types=1);
 use Bnomei\Utm;
 use Faker\Factory;
 
-require_once __DIR__.'/../vendor/autoload.php';
 test('instance', function () {
     $utm = new Utm;
 
@@ -38,7 +37,6 @@ test('track', function () {
 
     $utm = new Utm([
         'ip' => '169.150.197.101',
-        'ipstack_access_key' => F::read(__DIR__.'/.ipstackkey'),
     ]);
 
     $count = $utm->count();
@@ -60,8 +58,7 @@ test('rate limit', function () {
         'ip' => '123.123.123.123', // different ip than other tests because of ratelimit
     ]);
 
-    // flush
-    $utm->database()->execute('DELETE FROM utm WHERE id > 0');
+    flushUtmTestState($utm);
 
     for ($n = 0; $n < 5; $n++) {
         expect($utm->track('home', [
@@ -222,5 +219,5 @@ function flushUtmTestState($utm): void
 
 function utmTestIphash(string $ip): string
 {
-    return sha1(dirname(__DIR__).'/classes'.$ip);
+    return sha1(dirname(__DIR__, 2).'/classes'.$ip);
 }

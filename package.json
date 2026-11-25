@@ -1,7 +1,13 @@
 {
   "private": true,
   "scripts": {
-    "dev": "npx -y kirbyup src/index.js --watch",
-    "build": "npx -y kirbyup src/index.js"
+    "dev": "kirbyup dev src/index.js",
+    "build": "kirbyup src/index.js",
+    "test:panel": "node --test tests/panel.test.mjs"
+  },
+  "devDependencies": {
+    "kirbyup": "^4.0.0",
+    "playwright-core": "^1.65.1",
+    "sass": "^1.108.2"
   }
 }

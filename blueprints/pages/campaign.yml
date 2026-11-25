@@ -14,43 +14,40 @@ tabs:
     columns:
       stats:
         width: 1/1
-        sections:
-          bar:
-            type: fields
-            fields:
-              utmbar:
-                type: utmbar
+        fields:
+          utmbar:
+            type: utmbar
           stats:
             type: stats
             reports: page.reports('stats')
       source:
         width: 1/4
-        sections:
+        fields:
           source:
             type: stats
             reports: page.reports('source')
       medium:
         width: 1/4
-        sections:
+        fields:
           medium:
             type: stats
             reports: page.reports('medium')
       country:
         width: 1/4
-        sections:
+        fields:
           country:
             type: stats
             reports: page.reports('country')
       city:
         width: 1/4
-        sections:
+        fields:
           city:
             type: stats
             reports: page.reports('city')
   events:
-    sections:
+    fields:
       events:
-        type: pages
+        type: pagelist
         create: false
         image: false
         sortable: false
@@ -68,5 +65,5 @@ tabs:
           # country_name: true
           # city: true
           # user_agent: true
-        templates:
-            - utm-event
+        blueprints:
+          - utm-event

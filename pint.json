@@ -1,6 +1,7 @@
 {
     "exclude": [
         "tests/kirby",
+        "tests/vendor",
         "vendor"
     ]
 }

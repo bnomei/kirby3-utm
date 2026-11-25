@@ -1,7 +1,7 @@
 {
     "name": "bnomei/kirby3-utm",
     "type": "kirby-plugin",
-    "version": "5.1.0",
+    "version": "6.0.0",
     "license": "MIT",
     "description": "Kirby UTM Tracking",
     "authors": [
@@ -34,39 +34,35 @@
         }
     },
     "require": {
-        "php": ">=8.2",
+        "php": "~8.3.0 || ~8.4.0 || ~8.5.0 || ~8.6.0",
+        "ext-pdo_sqlite": "*",
         "ext-sqlite3": "*",
         "getkirby/composer-installer": "^1.2",
         "jaybizzle/crawler-detect": "^1.2",
         "matomo/device-detector": "^6.1"
     },
     "require-dev": {
-        "fzaninotto/faker": "^1.5",
-        "getkirby/cms": "^5.0.0-alpha.4",
-        "larastan/larastan": "^v3.0.0",
+        "fakerphp/faker": "^1.24",
+        "getkirby/cms": "^6.0",
         "laravel/pint": "^1.13",
         "pestphp/pest": "^v3.5.1",
-        "spatie/ray": "^1.39"
+        "phpstan/phpstan": "^2.1"
     },
     "scripts": {
-        "stan": "./vendor/bin/phpstan",
-        "fix": "./vendor/bin/pint",
-        "test": "./vendor/bin/pest --profile",
+        "stan": "tests/vendor/bin/phpstan",
+        "fix": "tests/vendor/bin/pint",
+        "test": "tests/vendor/bin/pest --profile",
         "dist": [
             "composer fix",
             "composer install --no-dev --optimize-autoloader",
             "git rm -rf --cached .; git add .;"
         ],
-        "kirby": [
-            "composer install",
-            "composer update",
-            "composer install --working-dir=tests/kirby --no-dev --optimize-autoloader",
-            "composer update --working-dir=tests/kirby",
-            "sed -i.bak 's/function dump(/function xdump(/g' tests/kirby/config/helpers.php",
-            "sed -i.bak 's/function e(/function xe(/g' tests/kirby/config/helpers.php"
-        ]
+        "kirby": "COMPOSER_VENDOR_DIR=tests/vendor composer install"
     },
     "extra": {
+        "kirby": {
+            "compatible": "^6.0"
+        },
         "kirby-cms-path": "tests/kirby"
     }
 }

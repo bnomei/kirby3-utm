@@ -6,6 +6,11 @@
 node_modules
 
 /tests/kirby
+/tests/vendor
+/tests/public/media
+/.amp/in/
+/.amp/portals/
+/index.dev.js
 /tests/logs
 /tests/media
 /tests/site/accounts
@@ -20,6 +25,8 @@ node_modules
 /vendor/**/*.md
 /vendor/**/*.yml
 /vendor/**/*.yaml
+!/vendor/matomo/device-detector/regexes/**/*.yml
+!/vendor/matomo/device-detector/regexes/*.yml
 /vendor/**/*.xml
 /vendor/**/*.dist
 /vendor/**/readme.php

@@ -194,9 +194,10 @@ class UtmcampaignPage extends Page
         $children = [];
         $db = Utm::singleton()->database();
 
-        $results = $db->query('SELECT id as title FROM utm WHERE utm_campaign = ?', [$this->title()->value()]);
+        $title = $this->title()->value();
+        $results = $db->query('SELECT id as title FROM utm WHERE utm_campaign = ?', [$title === 'undefined' ? '' : $title]);
         if (! $results) {
-            return [];
+            return new Pages;
         }
         foreach ($results as $event) {
             $title = $event->title;

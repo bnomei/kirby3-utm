@@ -1,7 +1,7 @@
 <template>
   <div class="utm-bar-wrapper">
-    <div v-for="item in data" :style="item.style" :title="item.date" :class="item.theme">
-      <div v-html="item.amount"></div>
+    <div v-for="(item, index) in data" :key="index" :style="item.style" :title="item.date" :class="item.theme">
+      <div>{{ item.amount }}</div>
     </div>
   </div>
 </template>
@@ -17,7 +17,7 @@ export default {
 
 <style lang="scss">
 .utm-bar-wrapper {
-  background: var(--color-white);
+  background: var(--item-color-back);
   box-shadow: var(--shadow);
   padding: var(--spacing-3) var(--spacing-6);
   line-height: var(--leading-normal);
@@ -28,7 +28,7 @@ export default {
   > div {
     margin: 0 1px;
     cursor: pointer;
-    background: var(--color-blue);
+    background: var(--color-blue-650);
     display: flex;
     align-items: end;
     justify-content: center;
@@ -42,10 +42,10 @@ export default {
     transform: rotate(-90deg) ;
   }
   > div.positive {
-    background: var(--color-green);
+    background: var(--color-green-650);
   }
   > div.negative {
-    background: var(--color-red);
+    background: var(--color-red-650);
   }
   > div:hover {
     opacity: 0.8;

@@ -50,6 +50,7 @@ class ComposerStaticInitec7caf1d876bf464ce1a4e0777c7fede
 
     public static $classMap = array (
         'Bnomei\\Utm' => __DIR__ . '/../..' . '/classes/Utm.php',
+        'Bnomei\\UtmbarField' => __DIR__ . '/../..' . '/classes/UtmbarField.php',
         'Composer\\InstalledVersions' => __DIR__ . '/..' . '/composer/InstalledVersions.php',
         'DeviceDetector\\Cache\\CacheInterface' => __DIR__ . '/..' . '/matomo/device-detector/Cache/CacheInterface.php',
         'DeviceDetector\\Cache\\DoctrineBridge' => __DIR__ . '/..' . '/matomo/device-detector/Cache/DoctrineBridge.php',

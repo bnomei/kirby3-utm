@@ -7,6 +7,7 @@ $baseDir = dirname($vendorDir);
 
 return array(
     'Bnomei\\Utm' => $baseDir . '/classes/Utm.php',
+    'Bnomei\\UtmbarField' => $baseDir . '/classes/UtmbarField.php',
     'Composer\\InstalledVersions' => $vendorDir . '/composer/InstalledVersions.php',
     'DeviceDetector\\Cache\\CacheInterface' => $vendorDir . '/matomo/device-detector/Cache/CacheInterface.php',
     'DeviceDetector\\Cache\\DoctrineBridge' => $vendorDir . '/matomo/device-detector/Cache/DoctrineBridge.php',

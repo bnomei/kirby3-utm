@@ -1,7 +1,7 @@
 # Kirby UTM
 
-[![Kirby 5](https://flat.badgen.net/badge/Kirby/5?color=ECC748)](https://getkirby.com)
-![PHP 8.2](https://flat.badgen.net/badge/PHP/8.2?color=4E5B93&icon=php&label)
+[![Kirby 6](https://flat.badgen.net/badge/Kirby/6?color=ECC748)](https://getkirby.com/releases/6)
+![PHP 8.3+](https://flat.badgen.net/badge/PHP/8.3+?color=4E5B93&icon=php&label)
 ![Release](https://flat.badgen.net/packagist/v/bnomei/kirby3-utm?color=ae81ff&icon=github&label)
 ![Downloads](https://flat.badgen.net/packagist/dt/bnomei/kirby3-utm?color=272822&icon=github&label)
 [![Coverage](https://flat.badgen.net/codeclimate/coverage/bnomei/kirby3-utm?icon=codeclimate&label)](https://codeclimate.com/github/bnomei/kirby3-utm)
@@ -11,7 +11,9 @@
 
 ## Installation
 
-- unzip [master.zip](https://github.com/bnomei/kirby3-utm/archive/master.zip) as folder `site/plugins/kirby3-utm` or
+Version 6 requires Kirby 6 and PHP with SQLite3 and PDO SQLite. Use version 5 for Kirby 5; the two Panel builds are not interchangeable.
+
+- unzip [main.zip](https://github.com/bnomei/kirby3-utm/archive/refs/heads/main.zip) as folder `site/plugins/kirby3-utm` or
 - `git submodule add https://github.com/bnomei/kirby3-utm.git site/plugins/kirby3-utm` or
 - `composer require bnomei/kirby3-utm`
 
@@ -100,6 +102,12 @@ return [
 ## Dependencies
 
 - (optional) [free ipstack account for IP geolocations](https://ipstack.com/)
+
+## Testing the Panel
+
+In an Amp orb, `.agents/setup` prepares PHP, the locked Kirby test site and Chromium. Run `npm run test:panel` to track a visit, sign into the real Panel, and check the campaign chart and read-only event details. The test creates its own account, cache and SQLite database and removes them afterwards.
+
+Elsewhere, use PHP 8.4 and Node 24+, then run `composer kirby`, `npm ci` and `npx playwright-core install chromium` (or set `CHROME_BIN` to an installed Chrome). Run `npm run build` after changing the Vue field. `composer test` runs the PHP suite and `composer stan` runs static analysis.
 
 ## Disclaimer
 

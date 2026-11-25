@@ -1,12 +1,15 @@
 <?php
 
 use Bnomei\Utm;
+use Bnomei\UtmbarField;
 use Kirby\Content\Field;
 use Kirby\Filesystem\Dir;
 use Kirby\Toolkit\A;
 use Kirby\Toolkit\Str;
 
-@include_once __DIR__.'/vendor/autoload.php';
+if (! class_exists(Utm::class)) {
+    require_once __DIR__.'/vendor/autoload.php';
+}
 
 load([
     'UtmPage' => 'models/UtmPage.php',
@@ -55,14 +58,14 @@ Kirby::plugin('bnomei/utm', [
     ],
     'fieldMethods' => [
         'toStatsPercent' => function (Field $field): string {
-            $val = $field->toInt(); // @phpstan-ignore-line
+            $val = $field->toInt();
 
             return ($val >= 0 ? '+' : '').$val.'%';
         },
         'toStatsTheme' => function (Field $field) {
             return match (true) {
-                $field->toInt() > 0 => 'positive', // @phpstan-ignore-line
-                $field->toInt() < 0 => 'negative', // @phpstan-ignore-line
+                $field->toInt() > 0 => 'positive',
+                $field->toInt() < 0 => 'negative',
                 default => 'info',
             };
         },
@@ -102,65 +105,7 @@ Kirby::plugin('bnomei/utm', [
         ],
     ],
     'fields' => [
-        'utmbar' => [
-            'props' => [
-                'data' => function () {
-                    $model = $this->model();
-                    $title = $model->title()->value() === 'undefined' ? '' : $model->title()->value();
-                    $key = md5($title).'-bar';
-                    if (option('debug') !== true && $data = kirby()->cache('bnomei.utm.queries')->get($key)) {
-                        return $data;
-                    }
-                    $utm = Utm::singleton();
-                    $query = "SELECT count(*) AS events_count, strftime('%Y/%m/%d', visited_at) AS event_day FROM utm WHERE utm_campaign = ? AND ".Utm::sqliteDateRange(
-                        intval($utm->option('stats_range')) * 2,
-                        0,
-                        'visited_at'
-                    ).' GROUP BY event_day ORDER BY event_day asc';
-
-                    $events = $utm->database()->query($query, [$title]);
-                    if ($events->count() === 0) {
-                        return [];
-                    }
-                    $max = $events->sortBy('events_count', 'desc')->first()?->events_count ?? 0; // @phpstan-ignore-line
-                    $avg = array_sum($events->values(fn ($item) => $item->events_count)) / $events->count();
-
-                    $days = new DatePeriod(new DateTime('now - '.intval($utm->option('stats_range')) * 2 - 1 .' days'), new DateInterval('P1D'), new DateTime('now + 1 day'));
-                    $num = 0;
-                    foreach ($days as $day) {
-                        $num++;
-                    }
-                    $width = round(100 / $num, 2);
-
-                    $data = [];
-                    foreach ($days as $day) {
-                        $amount = 0;
-                        $height = 0;
-                        $theme = 'info';
-                        if ($event = $events->filterBy('event_day', $day->format('Y/m/d'))->first()) {
-                            $amount = $event->events_count;
-                            $height = intval($amount / $max * 100.0);
-                            if ($amount > $avg) {
-                                $theme = 'positive';
-                            } elseif ($amount < $avg) {
-                                $theme = 'negative';
-                            }
-                        }
-                        $data[] = [
-                            'amount' => $amount, // $amount > 1000 ? ($amount / 1000) . 'k' : $amount,
-                            'date' => $day->format(strval(option('bnomei.utm.bar.format', 'Y-m-d'))),
-                            'style' => "width: {$width}%; height: {$height}px;",
-                            'theme' => $theme.($amount > 100 ? ' rotate' : ''),
-                        ];
-                    }
-                    if (option('debug') !== true) {
-                        kirby()->cache('bnomei.utm.queries')->set($key, $data, 1);
-                    }
-
-                    return $data;
-                },
-            ],
-        ],
+        'utmbar' => UtmbarField::class,
     ],
     'translations' => [
         'en' => [
