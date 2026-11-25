@@ -3,7 +3,7 @@ import { execFileSync, spawn } from 'node:child_process';
 import { randomUUID } from 'node:crypto';
 import { existsSync, mkdirSync, mkdtempSync, rmSync } from 'node:fs';
 import { resolve } from 'node:path';
-import { once } from 'node:events';
+import { createInterface } from 'node:readline';
 import test from 'node:test';
 import { chromium } from 'playwright-core';
 
@@ -19,10 +19,13 @@ test('tagged visit → campaign chart → read-only event in the Panel', async (
     { env, input: password });
 
   const server = spawn('php', ['-S', '127.0.0.1:0', '-t', 'tests/public', 'tests/kirby/router.php'], { env });
-  const [startup] = await once(server.stderr, 'data');
   t.after(() => server.kill());
-  const base = /http:\/\/127\.0\.0\.1:\d+/.exec(startup.toString())?.[0];
-  assert.ok(base, startup.toString());
+  let base;
+  for await (const line of createInterface({ input: server.stderr })) {
+    base = /Development Server \((http:\/\/127\.0\.0\.1:\d+)\) started/.exec(line)?.[1];
+    if (base) break;
+  }
+  assert.ok(base, 'PHP exited without announcing a listening address');
   server.stderr.resume();
 
   const orbChrome = resolve('node_modules/.bin/utm-chrome');
